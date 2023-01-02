@@ -28,11 +28,11 @@ var lsCmd = &cobra.Command{
 	Short: "Show repository list.",
 	Run: func(cmd *cobra.Command, args []string) {
 		w := new(tabwriter.Writer)
-		w.Init(os.Stdout, 0, 8, 0, '\t', 0)
-		fmt.Fprintln(w, "NAME\tPATH")
+		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
+		fmt.Fprintln(w, "NAME\tREMOTE REPO\tLOCAL PATH\tEXISTS")
 
 		for index, repo := range config.Repos {
-			fmt.Fprintln(w, index+"\t"+repo.Path)
+			fmt.Fprintln(w, index+"\t"+repo.Repo+"\t"+repo.Path+"\t"+dirExists(repo.Path))
 		}
 
 		w.Flush()
@@ -41,4 +41,12 @@ var lsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
+}
+
+func dirExists(path string) string {
+	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
+		return " - "
+	} else {
+		return " \U00002705 "
+	}
 }
