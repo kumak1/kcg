@@ -1,6 +1,7 @@
 package kcg
 
 type Config struct {
+	Ghq   bool
 	Repos map[string]*RepositoryConfig
 }
 
