@@ -19,22 +19,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	Repos map[string]*RepositoryConfig
-}
-
-type RepositoryConfig struct {
-	Path    string
-	Depends []string
-}
-
 var cfgFile string
 
-var config Config
+var config kcg.Config
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
