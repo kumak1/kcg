@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/kumak1/kcg/kcg"
 
 	"github.com/spf13/cobra"
 )
@@ -32,7 +33,14 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("clone called")
+		gitCommand := kcg.GitCommand(config)
+
+		for _, repo := range config.Repos {
+			err := gitCommand.Clone(repo)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
 	},
 }
 
