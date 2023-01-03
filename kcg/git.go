@@ -99,7 +99,7 @@ func setup(path string, commands []string) error {
 
 	for _, setupCommand := range commands {
 		fmt.Println("run: " + setupCommand)
-		cmd := exec.Command(setupCommand)
+		cmd := exec.Command("sh", "-c", setupCommand)
 		cmd.Dir = path
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
