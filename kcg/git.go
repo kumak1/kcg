@@ -75,6 +75,17 @@ func (g ghq) Switch(config *RepositoryConfig, branch string) error {
 
 func switchBranch(path string, branch string) error {
 	fmt.Println("\n" + path)
+
+	if !dirExists(path) {
+		fmt.Println("not exists: " + path)
+		return nil
+	}
+
+	if !branchExists(path, branch) {
+		fmt.Println("'" + branch + "' branch is not exists.")
+		return nil
+	}
+
 	cmd := exec.Command("git", "switch", branch)
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
@@ -119,4 +130,11 @@ func dirExists(path string) bool {
 	} else {
 		return true
 	}
+}
+
+func branchExists(path string, branch string) bool {
+	cmd := exec.Command("git", "show-ref", "-q", "--heads", branch)
+	cmd.Dir = path
+	err := cmd.Run()
+	return err == nil
 }
