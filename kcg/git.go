@@ -21,6 +21,7 @@ func GitCommand(config Config) GitOperateInterface {
 type GitOperateInterface interface {
 	Clone(*RepositoryConfig) error
 	Pull(*RepositoryConfig) error
+	Setup(*RepositoryConfig) error
 	Switch(*RepositoryConfig, string) error
 }
 
@@ -74,4 +75,35 @@ func switchBranch(path string, branch string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func (g git) Setup(config *RepositoryConfig) error {
+	return setup(config.Path, config.SetupCommands)
+}
+
+func (g ghq) Setup(config *RepositoryConfig) error {
+	return setup(config.Path, config.SetupCommands)
+}
+
+func setup(path string, commands []string) error {
+	fmt.Println("\n" + path)
+
+	if len(commands) == 0 {
+		fmt.Println("no settings.")
+	}
+
+	for _, setupCommand := range commands {
+		fmt.Println("run: " + setupCommand)
+		cmd := exec.Command(setupCommand)
+		cmd.Dir = path
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
