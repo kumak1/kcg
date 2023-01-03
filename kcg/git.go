@@ -21,6 +21,7 @@ func GitCommand(config Config) GitOperateInterface {
 type GitOperateInterface interface {
 	Clone(*RepositoryConfig) error
 	Pull(*RepositoryConfig) error
+	Switch(*RepositoryConfig, string) error
 }
 
 type git struct{}
@@ -42,24 +43,35 @@ func (g ghq) Clone(config *RepositoryConfig) error {
 }
 
 func (g git) Pull(config *RepositoryConfig) error {
-	fmt.Println(config.Path)
-	cmd := exec.Command("git", "pull")
-	cmd.Dir = config.Path
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	return pull(config.Path)
 }
 
 func (g ghq) Pull(config *RepositoryConfig) error {
-	fmt.Println(config.Path)
+	return pull(config.Path)
+}
+
+func pull(path string) error {
+	fmt.Println(path)
 	cmd := exec.Command("git", "pull")
-	cmd.Dir = config.Path
+	cmd.Dir = path
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
 
-func ghqPath() ([]byte, error) {
-	cmd := exec.Command("ghq", "list", "-p", "-e", "kumaoche")
-	return cmd.Output()
+func (g git) Switch(config *RepositoryConfig, branch string) error {
+	return switchBranch(config.Path, branch)
+}
+
+func (g ghq) Switch(config *RepositoryConfig, branch string) error {
+	return switchBranch(config.Path, branch)
+}
+
+func switchBranch(path string, branch string) error {
+	fmt.Println("\n" + path)
+	cmd := exec.Command("git", "switch", branch)
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

@@ -17,35 +17,41 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/kumak1/kcg/kcg"
 
 	"github.com/spf13/cobra"
 )
 
 // switchCmd represents the switch command
 var switchCmd = &cobra.Command{
-	Use:   "switch",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "switch <branch>",
+	Short: "run `git switch` on each repository dir",
+	Long:  `Running git switch command on each repository dir`,
+	//Args: cobra.ExactArgs(1),
+	Args: func(cmd *cobra.Command, args []string) error {
+		if err := cobra.ExactArgs(1)(cmd, args); err != nil {
+			return fmt.Errorf("missing branch argument\n")
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("switch called")
+		repoFlag := cmd.Flag("repo")
+		gitCommand := kcg.GitCommand(config)
+
+		for index, repo := range config.Repos {
+			if repoFlag != nil && repoFlag.Value.String() != index {
+				continue
+			}
+
+			err := gitCommand.Switch(repo, args[0])
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(switchCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// switchCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// switchCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	switchCmd.Flags().String("repo", "", "repository name")
 }
