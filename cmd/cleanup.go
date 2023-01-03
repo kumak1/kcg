@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/kumak1/kcg/kcg"
 
 	"github.com/spf13/cobra"
 )
@@ -24,28 +25,26 @@ import (
 // cleanupCmd represents the cleanup command
 var cleanupCmd = &cobra.Command{
 	Use:   "cleanup",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "delete merged branch on each repository dir",
+	Long:  `Delete merged branch on each repository dir`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("cleanup called")
+		repoFlag, _ := cmd.Flags().GetString("repo")
+		gitCommand := kcg.GitCommand(config)
+
+		for index, repo := range config.Repos {
+			if repoFlag != "" && repoFlag != index {
+				continue
+			}
+
+			err := gitCommand.Cleanup(repo)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(cleanupCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// cleanupCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// cleanupCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	cleanupCmd.Flags().String("repo", "", "repository name")
 }

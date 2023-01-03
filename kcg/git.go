@@ -20,6 +20,7 @@ func GitCommand(config Config) GitOperateInterface {
 }
 
 type GitOperateInterface interface {
+	Cleanup(*RepositoryConfig) error
 	Clone(*RepositoryConfig) error
 	Pull(*RepositoryConfig) error
 	Setup(*RepositoryConfig) error
@@ -29,6 +30,27 @@ type GitOperateInterface interface {
 type git struct{}
 
 type ghq struct{}
+
+func (g git) Cleanup(config *RepositoryConfig) error {
+	return cleanup(config.Path)
+}
+
+func (g ghq) Cleanup(config *RepositoryConfig) error {
+	if path, err := ghqPath(config.Repo); err != nil {
+		return err
+	} else {
+		return cleanup(path)
+	}
+}
+
+func cleanup(path string) error {
+	fmt.Println(path)
+	cmd := exec.Command("sh", "-c", "git branch --merged|egrep -v '\\*|develop|main|master'|xargs git branch -d")
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
 
 func (g git) Clone(config *RepositoryConfig) error {
 	if dirExists(config.Path) {
