@@ -30,6 +30,11 @@ type git struct{}
 type ghq struct{}
 
 func (g git) Clone(config *RepositoryConfig) error {
+	if dirExists(config.Path) {
+		fmt.Println("exists: " + config.Path)
+		return nil
+	}
+
 	cmd := exec.Command("git", "clone", config.Repo, config.Path)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -106,4 +111,12 @@ func setup(path string, commands []string) error {
 	}
 
 	return nil
+}
+
+func dirExists(path string) bool {
+	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
+		return false
+	} else {
+		return true
+	}
 }
