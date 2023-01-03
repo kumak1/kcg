@@ -17,7 +17,7 @@ brew install kcg
 ```shell
 ghq: true
 repos:
-  kumaoche:
+  kcg:
     repo: git@github.com:kumak1/kcg.git
     path: ~/src/github.com/kumak1/kcg
 ```
