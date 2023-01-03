@@ -44,6 +44,7 @@ Usage:
   kcg [command]
 
 Available Commands:
+  cleanup     delete merged branch on each repository dir
   clone       run `git clone` each repository
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
