@@ -1,0 +1,26 @@
+builds:
+  - binary: kcg
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      -X github.com/kumak1/kcg/cmd.version={{.Version}}
+
+brews:
+  -
+    name: kcg
+    tap:
+      owner: kumak1
+      name: homebrew-ktools
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    description: "kumak1 Convenient Git tools."
+    homepage: "https://github.com/kumak1/kcg"
+    install: |
+      bin.install Dir['kcg']
+    test: |
+      system "#{bin}/kcg"
