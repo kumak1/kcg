@@ -15,7 +15,6 @@ brew install kcg
 `~/.kcg`
 
 ```shell
-ghq: true
 repos:
   kcg:
     repo: git@github.com:kumak1/kcg.git
