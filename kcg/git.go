@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func GitCommand(config Config) GitOperateInterface {
@@ -70,11 +71,26 @@ func (g git) Switch(config *RepositoryConfig, branch string) error {
 }
 
 func (g ghq) Switch(config *RepositoryConfig, branch string) error {
-	return switchBranch(config.Path, branch)
+	if path, err := ghqPath(config.Repo); err != nil {
+		return err
+	} else {
+		return switchBranch(path, branch)
+	}
 }
 
 func switchBranch(path string, branch string) error {
 	fmt.Println("\n" + path)
+
+	if !dirExists(path) {
+		fmt.Println("not exists: " + path)
+		return nil
+	}
+
+	if !branchExists(path, branch) {
+		fmt.Println("'" + branch + "' branch is not exists.")
+		return nil
+	}
+
 	cmd := exec.Command("git", "switch", branch)
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
@@ -119,4 +135,19 @@ func dirExists(path string) bool {
 	} else {
 		return true
 	}
+}
+
+func branchExists(path string, branch string) bool {
+	cmd := exec.Command("git", "show-ref", "-q", "--heads", branch)
+	cmd.Dir = path
+	err := cmd.Run()
+	return err == nil
+}
+
+func ghqPath(repo string) (string, error) {
+	cmd := exec.Command("ghq", "list", "-p", "-e", repo)
+	out, err := cmd.Output()
+	path := string(out)
+	path = strings.TrimRight(path, "\n")
+	return path, err
 }
