@@ -49,7 +49,7 @@ Available Commands:
   help        Help about any command
   ls          Show repository list.
   pull        run `git pull` on each repository dir
-  setup       run configfile setupCommands each repository
+  setup       run setup commands on each repository
   switch      run `git switch` on each repository dir
 
 Flags:
@@ -57,4 +57,5 @@ Flags:
   -h, --help            help for kcg
 
 Use "kcg [command] --help" for more information about a command.
+
 ```

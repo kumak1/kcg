@@ -103,14 +103,14 @@ func switchBranch(path string, branch string) error {
 }
 
 func (g git) Setup(config *RepositoryConfig) error {
-	return setup(config.Path, config.SetupCommands)
+	return setup(config.Path, config.Setup)
 }
 
 func (g ghq) Setup(config *RepositoryConfig) error {
 	if path, err := ghqPath(config.Repo); err != nil {
 		return err
 	} else {
-		return setup(path, config.SetupCommands)
+		return setup(path, config.Setup)
 	}
 }
 

@@ -25,8 +25,8 @@ import (
 // setupCmd represents the setup command
 var setupCmd = &cobra.Command{
 	Use:   "setup",
-	Short: "run configfile setupCommands each repository",
-	Long:  `Running configfile setupCommands each repository`,
+	Short: "run setup commands on each repository",
+	Long:  `Running setup commands on each repository`,
 	Run: func(cmd *cobra.Command, args []string) {
 		repoFlag, _ := cmd.Flags().GetString("repo")
 		gitCommand := kcg.GitCommand(config)
