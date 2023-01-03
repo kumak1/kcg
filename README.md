@@ -19,12 +19,14 @@ repos:
   kcg:
     repo: git@github.com:kumak1/kcg.git
     path: ~/src/github.com/kumak1/kcg
+  setupCommands:
+    - make setup
 ```
 
 ## usage
 
 ```shell
-% kcg -h                        
+% kcg -h
 This is git command wrapper CLI.
 
 Usage:
