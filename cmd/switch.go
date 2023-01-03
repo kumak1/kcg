@@ -35,11 +35,11 @@ var switchCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag := cmd.Flag("repo")
+		repoFlag, _ := cmd.Flags().GetString("repo")
 		gitCommand := kcg.GitCommand(config)
 
 		for index, repo := range config.Repos {
-			if repoFlag != nil && repoFlag.Value.String() != index {
+			if repoFlag != "" && repoFlag != index {
 				continue
 			}
 
