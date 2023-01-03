@@ -54,7 +54,11 @@ func (g git) Pull(config *RepositoryConfig) error {
 }
 
 func (g ghq) Pull(config *RepositoryConfig) error {
-	return pull(config.Path)
+	if path, err := ghqPath(config.Repo); err != nil {
+		return err
+	} else {
+		return pull(path)
+	}
 }
 
 func pull(path string) error {
@@ -103,7 +107,11 @@ func (g git) Setup(config *RepositoryConfig) error {
 }
 
 func (g ghq) Setup(config *RepositoryConfig) error {
-	return setup(config.Path, config.SetupCommands)
+	if path, err := ghqPath(config.Repo); err != nil {
+		return err
+	} else {
+		return setup(path, config.SetupCommands)
+	}
 }
 
 func setup(path string, commands []string) error {
