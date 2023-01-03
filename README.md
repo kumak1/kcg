@@ -19,7 +19,7 @@ repos:
   kcg:
     repo: git@github.com:kumak1/kcg.git
     path: ~/src/github.com/kumak1/kcg
-    setupCommands:
+    setup:
       - make setup
 ```
 
@@ -30,7 +30,7 @@ ghq: true
 repos:
   kcg:
     repo: git@github.com:kumak1/kcg.git
-    setupCommands:
+    setup:
       - make setup
 ```
 
