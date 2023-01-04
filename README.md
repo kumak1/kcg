@@ -14,13 +14,13 @@ brew install kcg
 
 `~/.kcg`
 
+### minimum
+
 ```shell
 repos:
   kcg:
     repo: git@github.com:kumak1/kcg.git
     path: ~/src/github.com/kumak1/kcg
-    setup:
-      - make setup
 ```
 
 if you use [ghq](https://github.com/x-motemen/ghq)
@@ -30,8 +30,38 @@ ghq: true
 repos:
   kcg:
     repo: git@github.com:kumak1/kcg.git
+```
+
+### more options
+
+```shell
+repos:
+  with_setup_commands:
+    repo: git@github.com:kumak1/with_setup_commands.git
+    path: ~/src/github.com/kumak1/with_setup_commands
     setup:
-      - make setup
+      - "make setup"
+  with_groups:
+    repo: git@github.com:kumak1/with_groups.git
+    path: ~/src/github.com/kumak1/with_groups
+    groups:
+      - ktools
+  homebrew-ktools:
+    repo: git@github.com:kumak1/homebrew-ktools.git
+    path: ~/src/github.com/kumak1/homebrew-ktools
+    groups:
+      - ktools
+```
+
+### with Groups
+
+```shell
+repos:
+  kcg:
+    repo: git@github.com:kumak1/kcg.git
+    path: ~/src/github.com/kumak1/kcg
+    groups:
+      - ktools
 ```
 
 ## usage
