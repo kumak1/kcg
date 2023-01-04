@@ -22,6 +22,7 @@ func GitCommand(config Config) GitOperateInterface {
 type GitOperateInterface interface {
 	Cleanup(*RepositoryConfig) error
 	Clone(*RepositoryConfig) error
+	Path(*RepositoryConfig) string
 	Pull(*RepositoryConfig) error
 	Setup(*RepositoryConfig) error
 	Switch(*RepositoryConfig, string) error
@@ -69,6 +70,15 @@ func (g ghq) Clone(config *RepositoryConfig) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func (g git) Path(config *RepositoryConfig) string {
+	return config.Path
+}
+
+func (g ghq) Path(config *RepositoryConfig) string {
+	path, _ := ghqPath(config.Repo)
+	return path
 }
 
 func (g git) Pull(config *RepositoryConfig) error {
