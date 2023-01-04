@@ -17,8 +17,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
 	"os"
+	"strings"
 	"text/tabwriter"
 )
 
@@ -27,12 +29,16 @@ var lsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "Show repository list.",
 	Run: func(cmd *cobra.Command, args []string) {
+		gitCommand := kcg.GitCommand(config)
+
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
-		fmt.Fprintln(w, "NAME\tREMOTE REPO\tLOCAL PATH\tEXISTS")
+		fmt.Fprintln(w, "NAME\tGROUPS\tREMOTE REPO\tLOCAL PATH")
 
 		for index, repo := range config.Repos {
-			fmt.Fprintln(w, index+"\t"+repo.Repo+"\t"+repo.Path+"\t"+dirExists(repo.Path))
+			path := gitCommand.Path(repo)
+			groups := strings.Join(repo.Groups, ",")
+			fmt.Fprintln(w, index+"\t"+groups+"\t"+repo.Repo+"\t"+path)
 		}
 
 		w.Flush()
@@ -41,12 +47,4 @@ var lsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
-}
-
-func dirExists(path string) string {
-	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
-		return " - "
-	} else {
-		return " \U00002705 "
-	}
 }
