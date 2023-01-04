@@ -29,15 +29,15 @@ var cleanupCmd = &cobra.Command{
 	Long:  `Delete merged branch on each repository dir`,
 	Run: func(cmd *cobra.Command, args []string) {
 		repoFlag, _ := cmd.Flags().GetString("repo")
+		groupFlag, _ := cmd.Flags().GetString("group")
 		gitCommand := kcg.GitCommand(config)
 
 		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
+			if !kcg.ValidRepo(repoFlag, index) || !kcg.ValidGroup(groupFlag, repo) {
 				continue
 			}
 
-			err := gitCommand.Cleanup(repo)
-			if err != nil {
+			if err := gitCommand.Cleanup(repo); err != nil {
 				fmt.Println(err)
 			}
 		}
@@ -47,4 +47,5 @@ var cleanupCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(cleanupCmd)
 	cleanupCmd.Flags().String("repo", "", "repository name")
+	cleanupCmd.Flags().String("group", "", "repository group name")
 }

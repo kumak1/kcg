@@ -28,15 +28,15 @@ var pullCmd = &cobra.Command{
 	Long:  `Running git pull command on each repository dir`,
 	Run: func(cmd *cobra.Command, args []string) {
 		repoFlag, _ := cmd.Flags().GetString("repo")
+		groupFlag, _ := cmd.Flags().GetString("group")
 		gitCommand := kcg.GitCommand(config)
 
 		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
+			if !kcg.ValidRepo(repoFlag, index) || !kcg.ValidGroup(groupFlag, repo) {
 				continue
 			}
 
-			err := gitCommand.Pull(repo)
-			if err != nil {
+			if err := gitCommand.Pull(repo); err != nil {
 				fmt.Println(err)
 			}
 		}
@@ -46,4 +46,5 @@ var pullCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(pullCmd)
 	pullCmd.Flags().String("repo", "", "repository name")
+	pullCmd.Flags().String("group", "", "repository group name")
 }
