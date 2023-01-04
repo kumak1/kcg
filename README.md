@@ -53,17 +53,6 @@ repos:
       - ktools
 ```
 
-### with Groups
-
-```shell
-repos:
-  kcg:
-    repo: git@github.com:kumak1/kcg.git
-    path: ~/src/github.com/kumak1/kcg
-    groups:
-      - ktools
-```
-
 ## usage
 
 ```shell
