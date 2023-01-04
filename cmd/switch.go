@@ -36,15 +36,15 @@ var switchCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		repoFlag, _ := cmd.Flags().GetString("repo")
+		groupFlag, _ := cmd.Flags().GetString("group")
 		gitCommand := kcg.GitCommand(config)
 
 		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
+			if !kcg.ValidRepo(repoFlag, index) || !kcg.ValidGroup(groupFlag, repo) {
 				continue
 			}
 
-			err := gitCommand.Switch(repo, args[0])
-			if err != nil {
+			if err := gitCommand.Switch(repo, args[0]); err != nil {
 				fmt.Println(err)
 			}
 		}
@@ -54,4 +54,5 @@ var switchCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(switchCmd)
 	switchCmd.Flags().String("repo", "", "repository name")
+	switchCmd.Flags().String("group", "", "repository group name")
 }

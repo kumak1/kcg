@@ -29,15 +29,15 @@ var cloneCmd = &cobra.Command{
 	Long:  `Running git clone command each repository`,
 	Run: func(cmd *cobra.Command, args []string) {
 		repoFlag, _ := cmd.Flags().GetString("repo")
+		groupFlag, _ := cmd.Flags().GetString("group")
 		gitCommand := kcg.GitCommand(config)
 
 		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
+			if !kcg.ValidRepo(repoFlag, index) || !kcg.ValidGroup(groupFlag, repo) {
 				continue
 			}
 
-			err := gitCommand.Clone(repo)
-			if err != nil {
+			if err := gitCommand.Clone(repo); err != nil {
 				fmt.Println(err)
 			}
 		}
@@ -47,4 +47,5 @@ var cloneCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(cloneCmd)
 	cloneCmd.Flags().String("repo", "", "repository name")
+	cloneCmd.Flags().String("group", "", "repository group name")
 }

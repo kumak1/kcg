@@ -29,15 +29,15 @@ var setupCmd = &cobra.Command{
 	Long:  `Running setup commands on each repository`,
 	Run: func(cmd *cobra.Command, args []string) {
 		repoFlag, _ := cmd.Flags().GetString("repo")
+		groupFlag, _ := cmd.Flags().GetString("group")
 		gitCommand := kcg.GitCommand(config)
 
 		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
+			if !kcg.ValidRepo(repoFlag, index) || !kcg.ValidGroup(groupFlag, repo) {
 				continue
 			}
 
-			err := gitCommand.Setup(repo)
-			if err != nil {
+			if err := gitCommand.Setup(repo); err != nil {
 				fmt.Println(err)
 			}
 		}
@@ -47,4 +47,5 @@ var setupCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(setupCmd)
 	setupCmd.Flags().String("repo", "", "repository name")
+	setupCmd.Flags().String("group", "", "repository group name")
 }
