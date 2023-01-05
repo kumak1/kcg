@@ -115,13 +115,7 @@ func (g ghq) Switch(config *RepositoryConfig, branch string) error {
 }
 
 func switchBranch(path string, branch string) error {
-	fmt.Println("\n" + path)
-
-	if !kcgExec.DirExists(path) {
-		fmt.Println("not exists: " + path)
-		return nil
-	}
-
+	fmt.Println(path)
 	if !kcgExec.BranchExists(path, branch) {
 		fmt.Println("'" + branch + "' branch is not exists.")
 		return nil
