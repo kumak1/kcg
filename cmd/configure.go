@@ -27,14 +27,14 @@ import (
 // configureCmd represents the configure command
 var configureCmd = &cobra.Command{
 	Use:   "configure",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Operate config file",
+	Long:  `Operate config file`,
 }
 
 var configureInitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Create an empty config file",
-	Long:  ``,
+	Long:  `Create an empty config file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
 		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
@@ -47,8 +47,8 @@ var configureInitCmd = &cobra.Command{
 
 var configureSetCmd = &cobra.Command{
 	Use:   "set <name>",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Add repository config",
+	Long:  `Add repository config`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
@@ -74,8 +74,8 @@ var configureSetCmd = &cobra.Command{
 
 var configureDeleteCmd = &cobra.Command{
 	Use:   "delete <name>",
-	Short: "A brief description of your command",
-	Long:  ``,
+	Short: "Delete repository config",
+	Long:  `Delete repository config`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
@@ -95,6 +95,7 @@ func init() {
 	configureSetCmd.Flags().String("repo", "", "remote repository (required)")
 	configureSetCmd.Flags().String("path", "", "local dir")
 	configureSetCmd.Flags().StringArray("groups", []string{}, "group")
+	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
 	configureSetCmd.MarkFlagRequired("repo")
 
 	configureCmd.AddCommand(configureDeleteCmd)
@@ -105,8 +106,3 @@ func initRepo() {
 		config.Repos = map[string]*kcg.RepositoryConfig{}
 	}
 }
-
-//kcg config init
-//kcg config add NAME --repo --path --groups --setup
-//kcg config set NAME --repo --path --groups --setup
-//kcg config delete NAME
