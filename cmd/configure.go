@@ -17,6 +17,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/kumak1/kcg/kcg"
+	kcgExec "github.com/kumak1/kcg/kcg/exec"
+	"github.com/spf13/viper"
 
 	"github.com/spf13/cobra"
 )
@@ -25,27 +28,85 @@ import (
 var configureCmd = &cobra.Command{
 	Use:   "configure",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Long:  ``,
+}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+var configureInitCmd = &cobra.Command{
+	Use:   "init",
+	Short: "Create an empty config file",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("configure called")
+		initRepo()
+		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
+		viper.Set("repos", config.Repos)
+		path, _ := cmd.Flags().GetString("path")
+		kcg.WriteConfig(path)
+		fmt.Println("Create config file at: " + viper.ConfigFileUsed())
+	},
+}
+
+var configureSetCmd = &cobra.Command{
+	Use:   "set <name>",
+	Short: "A brief description of your command",
+	Long:  ``,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		initRepo()
+		if _, ok := config.Repos[args[0]]; !ok {
+			config.Repos[args[0]] = &kcg.RepositoryConfig{}
+		}
+		if repo, _ := cmd.Flags().GetString("repo"); repo != "" {
+			config.Repos[args[0]].Repo = repo
+		}
+		if path, _ := cmd.Flags().GetString("path"); path != "" {
+			config.Repos[args[0]].Path = path
+		}
+		if groups, _ := cmd.Flags().GetStringArray("groups"); len(groups) != 0 {
+			config.Repos[args[0]].Groups = groups
+		}
+		if setup, _ := cmd.Flags().GetStringArray("setup"); len(setup) != 0 {
+			config.Repos[args[0]].Setup = setup
+		}
+		viper.Set("repos", config.Repos)
+		kcg.WriteConfig("")
+	},
+}
+
+var configureDeleteCmd = &cobra.Command{
+	Use:   "delete <name>",
+	Short: "A brief description of your command",
+	Long:  ``,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		initRepo()
+		delete(config.Repos, args[0])
+		viper.Set("repos", config.Repos)
+		kcg.WriteConfig("")
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(configureCmd)
 
-	// Here you will define your flags and configuration settings.
+	configureCmd.AddCommand(configureInitCmd)
+	configureInitCmd.Flags().String("path", "", "write config file path")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// configureCmd.PersistentFlags().String("foo", "", "A help for foo")
+	configureCmd.AddCommand(configureSetCmd)
+	configureSetCmd.Flags().String("repo", "", "remote repository (required)")
+	configureSetCmd.Flags().String("path", "", "local dir")
+	configureSetCmd.Flags().StringArray("groups", []string{}, "group")
+	configureSetCmd.MarkFlagRequired("repo")
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// configureCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	configureCmd.AddCommand(configureDeleteCmd)
 }
+
+func initRepo() {
+	if config.Repos == nil {
+		config.Repos = map[string]*kcg.RepositoryConfig{}
+	}
+}
+
+//kcg config init
+//kcg config add NAME --repo --path --groups --setup
+//kcg config set NAME --repo --path --groups --setup
+//kcg config delete NAME
