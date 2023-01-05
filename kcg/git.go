@@ -2,9 +2,9 @@ package kcg
 
 import (
 	"fmt"
+	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 func GitCommand(config Config) GitOperateInterface {
@@ -37,7 +37,7 @@ func (g git) Cleanup(config *RepositoryConfig) error {
 }
 
 func (g ghq) Cleanup(config *RepositoryConfig) error {
-	if path, err := ghqPath(config.Repo); err != nil {
+	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
 		return err
 	} else {
 		return cleanup(path)
@@ -54,7 +54,7 @@ func cleanup(path string) error {
 }
 
 func (g git) Clone(config *RepositoryConfig) error {
-	if dirExists(config.Path) {
+	if kcgExec.DirExists(config.Path) {
 		fmt.Println("exists: " + config.Path)
 		return nil
 	}
@@ -77,7 +77,7 @@ func (g git) Path(config *RepositoryConfig) string {
 }
 
 func (g ghq) Path(config *RepositoryConfig) string {
-	path, _ := ghqPath(config.Repo)
+	path, _ := kcgExec.GhqPath(config.Repo)
 	return path
 }
 
@@ -86,7 +86,7 @@ func (g git) Pull(config *RepositoryConfig) error {
 }
 
 func (g ghq) Pull(config *RepositoryConfig) error {
-	if path, err := ghqPath(config.Repo); err != nil {
+	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
 		return err
 	} else {
 		return pull(path)
@@ -107,7 +107,7 @@ func (g git) Switch(config *RepositoryConfig, branch string) error {
 }
 
 func (g ghq) Switch(config *RepositoryConfig, branch string) error {
-	if path, err := ghqPath(config.Repo); err != nil {
+	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
 		return err
 	} else {
 		return switchBranch(path, branch)
@@ -117,12 +117,12 @@ func (g ghq) Switch(config *RepositoryConfig, branch string) error {
 func switchBranch(path string, branch string) error {
 	fmt.Println("\n" + path)
 
-	if !dirExists(path) {
+	if !kcgExec.DirExists(path) {
 		fmt.Println("not exists: " + path)
 		return nil
 	}
 
-	if !branchExists(path, branch) {
+	if !kcgExec.BranchExists(path, branch) {
 		fmt.Println("'" + branch + "' branch is not exists.")
 		return nil
 	}
@@ -139,7 +139,7 @@ func (g git) Setup(config *RepositoryConfig) error {
 }
 
 func (g ghq) Setup(config *RepositoryConfig) error {
-	if path, err := ghqPath(config.Repo); err != nil {
+	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
 		return err
 	} else {
 		return setup(path, config.Setup)
@@ -167,27 +167,4 @@ func setup(path string, commands []string) error {
 	}
 
 	return nil
-}
-
-func dirExists(path string) bool {
-	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
-		return false
-	} else {
-		return true
-	}
-}
-
-func branchExists(path string, branch string) bool {
-	cmd := exec.Command("git", "show-ref", "-q", "--heads", branch)
-	cmd.Dir = path
-	err := cmd.Run()
-	return err == nil
-}
-
-func ghqPath(repo string) (string, error) {
-	cmd := exec.Command("ghq", "list", "-p", "-e", repo)
-	out, err := cmd.Output()
-	path := string(out)
-	path = strings.TrimRight(path, "\n")
-	return path, err
 }
