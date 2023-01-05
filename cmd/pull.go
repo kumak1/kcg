@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/kumak1/kcg/kcg"
+	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"github.com/spf13/cobra"
 )
 
@@ -33,6 +34,11 @@ var pullCmd = &cobra.Command{
 
 		for index, repo := range config.Repos {
 			if !kcg.ValidRepo(repoFlag, index) || !kcg.ValidGroup(groupFlag, repo) {
+				continue
+			}
+
+			if path := gitCommand.Path(repo); !kcgExec.DirExists(path) {
+				fmt.Println("invalid path: '" + index + "' " + path)
 				continue
 			}
 
