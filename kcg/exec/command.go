@@ -3,6 +3,7 @@ package exec
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -42,4 +43,19 @@ func GhqPath(repo string) (string, error) {
 	path := string(out)
 	path = strings.TrimRight(path, "\n")
 	return path, err
+}
+
+func GhqList() map[string]string {
+	ghqList, _ := exec.Command("ghq", "list", "-p").Output()
+
+	pathList := map[string]string{}
+	for _, path := range strings.Split(string(ghqList), "\n") {
+		if path != "" {
+			cmd := exec.Command("git", "config", "--get", "remote.origin.url")
+			cmd.Dir = path
+			url, _ := cmd.Output()
+			pathList[filepath.Base(path)] = strings.TrimRight(string(url), "\n")
+		}
+	}
+	return pathList
 }
