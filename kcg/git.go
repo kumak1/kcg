@@ -27,7 +27,7 @@ type GitOperateInterface interface {
 	Cleanup(*RepositoryConfig) error
 	Clone(*RepositoryConfig) error
 	List(string, string, string) map[string]*RepositoryConfig
-	Path(*RepositoryConfig) string
+	Path(*RepositoryConfig) (string, bool)
 	Pull(*RepositoryConfig) error
 	Setup(*RepositoryConfig) error
 	Switch(*RepositoryConfig, string) error
@@ -95,13 +95,13 @@ func list(repository string, group string, filter string) map[string]*Repository
 	return repositoryConfigs
 }
 
-func (g git) Path(config *RepositoryConfig) string {
-	return config.Path
+func (g git) Path(config *RepositoryConfig) (string, bool) {
+	return config.Path, kcgExec.FileExists(config.Path)
 }
 
-func (g ghq) Path(config *RepositoryConfig) string {
+func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 	path, _ := kcgExec.GhqPath(config.Repo)
-	return path
+	return path, kcgExec.FileExists(path)
 }
 
 func (g git) Pull(config *RepositoryConfig) error {

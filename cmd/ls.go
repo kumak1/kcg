@@ -39,7 +39,7 @@ var lsCmd = &cobra.Command{
 		fmt.Fprintln(w, "NAME\tGROUPS\tREMOTE REPO\tLOCAL PATH")
 
 		for index, repo := range kcgCmd.List(repoFlag, groupFlag, filterFlag) {
-			path := kcgCmd.Path(repo)
+			path, _ := kcgCmd.Path(repo)
 			groups := strings.Join(repo.Groups, ",")
 			fmt.Fprintln(w, index+"\t"+groups+"\t"+repo.Repo+"\t"+path)
 		}
