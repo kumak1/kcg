@@ -31,10 +31,10 @@ var cloneCmd = &cobra.Command{
 		repoFlag, _ := cmd.Flags().GetString("repo")
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		gitCommand := kcg.GitCommand(config)
+		kcgCmd := kcg.Command(config)
 
-		for _, repo := range gitCommand.List(repoFlag, groupFlag, filterFlag) {
-			if err := gitCommand.Clone(repo); err != nil {
+		for _, repo := range kcgCmd.List(repoFlag, groupFlag, filterFlag) {
+			if err := kcgCmd.Clone(repo); err != nil {
 				fmt.Println(err)
 			}
 		}

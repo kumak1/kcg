@@ -39,15 +39,15 @@ var switchCmd = &cobra.Command{
 		repoFlag, _ := cmd.Flags().GetString("repo")
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		gitCommand := kcg.GitCommand(config)
+		kcgCmd := kcg.Command(config)
 
-		for index, repo := range gitCommand.List(repoFlag, groupFlag, filterFlag) {
-			if path := gitCommand.Path(repo); !kcgExec.DirExists(path) {
+		for index, repo := range kcgCmd.List(repoFlag, groupFlag, filterFlag) {
+			if path := kcgCmd.Path(repo); !kcgExec.DirExists(path) {
 				fmt.Println("invalid path: '" + index + "' " + path)
 				continue
 			}
 
-			if err := gitCommand.Switch(repo, args[0]); err != nil {
+			if err := kcgCmd.Switch(repo, args[0]); err != nil {
 				fmt.Println(err)
 			}
 		}

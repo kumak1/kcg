@@ -10,7 +10,7 @@ import (
 
 var repositoryConfig map[string]*RepositoryConfig
 
-func GitCommand(config Config) GitOperateInterface {
+func Command(config Config) GitOperateInterface {
 	repositoryConfig = config.Repos
 
 	var gitOperator GitOperateInterface

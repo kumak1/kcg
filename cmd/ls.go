@@ -32,14 +32,14 @@ var lsCmd = &cobra.Command{
 		repoFlag, _ := cmd.Flags().GetString("repo")
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		gitCommand := kcg.GitCommand(config)
+		kcgCmd := kcg.Command(config)
 
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
 		fmt.Fprintln(w, "NAME\tGROUPS\tREMOTE REPO\tLOCAL PATH")
 
-		for index, repo := range gitCommand.List(repoFlag, groupFlag, filterFlag) {
-			path := gitCommand.Path(repo)
+		for index, repo := range kcgCmd.List(repoFlag, groupFlag, filterFlag) {
+			path := kcgCmd.Path(repo)
 			groups := strings.Join(repo.Groups, ",")
 			fmt.Fprintln(w, index+"\t"+groups+"\t"+repo.Repo+"\t"+path)
 		}
