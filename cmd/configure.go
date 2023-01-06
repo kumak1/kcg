@@ -40,6 +40,16 @@ var configureInitCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
 		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
+
+		if importFromGhq, _ := cmd.Flags().GetBool("import-from-ghq"); importFromGhq {
+			for index, repo := range kcgExec.GhqList() {
+				if _, ok := config.Repos[index]; !ok {
+					config.Repos[index] = &kcg.RepositoryConfig{}
+				}
+				config.Repos[index].Repo = repo
+			}
+		}
+
 		viper.Set("repos", config.Repos)
 		path, _ := cmd.Flags().GetString("path")
 		WriteConfig(path)
@@ -92,6 +102,7 @@ func init() {
 
 	configureCmd.AddCommand(configureInitCmd)
 	configureInitCmd.Flags().String("path", "", "write config file path")
+	configureInitCmd.Flags().Bool("import-from-ghq", false, "create from `ghq list`")
 
 	configureCmd.AddCommand(configureSetCmd)
 	configureSetCmd.Flags().String("repo", "", "remote repository (required)")
