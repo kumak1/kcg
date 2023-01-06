@@ -66,6 +66,7 @@ Available Commands:
   cleanup     delete merged branch on each repository dir
   clone       run `git clone` each repository
   completion  Generate the autocompletion script for the specified shell
+  configure   Operate config file
   help        Help about any command
   ls          Show repository list.
   pull        run `git pull` on each repository dir
