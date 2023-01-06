@@ -32,11 +32,7 @@ var cloneCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		gitCommand := kcg.GitCommand(config)
 
-		for index, repo := range config.Repos {
-			if !kcg.ValidRepo(repoFlag, index) || !kcg.ValidGroup(groupFlag, repo) {
-				continue
-			}
-
+		for _, repo := range gitCommand.List(repoFlag, groupFlag, "") {
 			if err := gitCommand.Clone(repo); err != nil {
 				fmt.Println(err)
 			}

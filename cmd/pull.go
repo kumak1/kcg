@@ -32,11 +32,7 @@ var pullCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		gitCommand := kcg.GitCommand(config)
 
-		for index, repo := range config.Repos {
-			if !kcg.ValidRepo(repoFlag, index) || !kcg.ValidGroup(groupFlag, repo) {
-				continue
-			}
-
+		for index, repo := range gitCommand.List(repoFlag, groupFlag, "") {
 			if path := gitCommand.Path(repo); !kcgExec.DirExists(path) {
 				fmt.Println("invalid path: '" + index + "' " + path)
 				continue

@@ -29,13 +29,15 @@ var lsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "Show repository list.",
 	Run: func(cmd *cobra.Command, args []string) {
+		repoFlag, _ := cmd.Flags().GetString("repo")
+		groupFlag, _ := cmd.Flags().GetString("group")
 		gitCommand := kcg.GitCommand(config)
 
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
 		fmt.Fprintln(w, "NAME\tGROUPS\tREMOTE REPO\tLOCAL PATH")
 
-		for index, repo := range config.Repos {
+		for index, repo := range gitCommand.List(repoFlag, groupFlag, "") {
 			path := gitCommand.Path(repo)
 			groups := strings.Join(repo.Groups, ",")
 			fmt.Fprintln(w, index+"\t"+groups+"\t"+repo.Repo+"\t"+path)
@@ -47,4 +49,6 @@ var lsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
+	lsCmd.Flags().String("repo", "", "repository name")
+	lsCmd.Flags().String("group", "", "repository group name")
 }
