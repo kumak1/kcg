@@ -30,9 +30,10 @@ var cloneCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		repoFlag, _ := cmd.Flags().GetString("repo")
 		groupFlag, _ := cmd.Flags().GetString("group")
+		filterFlag, _ := cmd.Flags().GetString("filter")
 		gitCommand := kcg.GitCommand(config)
 
-		for _, repo := range gitCommand.List(repoFlag, groupFlag, "") {
+		for _, repo := range gitCommand.List(repoFlag, groupFlag, filterFlag) {
 			if err := gitCommand.Clone(repo); err != nil {
 				fmt.Println(err)
 			}
@@ -44,4 +45,5 @@ func init() {
 	rootCmd.AddCommand(cloneCmd)
 	cloneCmd.Flags().String("repo", "", "repository name")
 	cloneCmd.Flags().String("group", "", "repository group name")
+	cloneCmd.Flags().String("filter", "", "repository filter")
 }

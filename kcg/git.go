@@ -5,6 +5,7 @@ import (
 	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 var repositoryConfig map[string]*RepositoryConfig
@@ -87,7 +88,7 @@ func (g ghq) List(repository string, group string, filter string) map[string]*Re
 func list(repository string, group string, filter string) map[string]*RepositoryConfig {
 	repositoryConfigs := map[string]*RepositoryConfig{}
 	for index, repo := range repositoryConfig {
-		if validRepo(repository, index) && validGroup(group, repo) {
+		if validRepo(repository, index) && validGroup(group, repo.Groups) && validFilter(filter, index) {
 			repositoryConfigs[index] = repo
 		}
 	}
@@ -189,16 +190,20 @@ func validRepo(repoFlag string, index string) bool {
 	return repoFlag == "" || repoFlag == index
 }
 
-func validGroup(groupFlag string, config *RepositoryConfig) bool {
+func validGroup(groupFlag string, groups []string) bool {
 	if groupFlag == "" {
 		return true
 	}
 
-	for _, group := range config.Groups {
+	for _, group := range groups {
 		if groupFlag == group {
 			return true
 		}
 	}
 
 	return false
+}
+
+func validFilter(filterFlag string, index string) bool {
+	return filterFlag == "" || strings.Contains(index, filterFlag)
 }
