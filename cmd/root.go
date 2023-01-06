@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+var version string
 var cfgFile string
 
 var config kcg.Config
@@ -55,6 +56,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kcg)")
+	rootCmd.Version = version
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
