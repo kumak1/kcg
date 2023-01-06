@@ -20,6 +20,8 @@ import (
 	"github.com/kumak1/kcg/kcg"
 	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"github.com/spf13/viper"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -40,7 +42,7 @@ var configureInitCmd = &cobra.Command{
 		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
 		viper.Set("repos", config.Repos)
 		path, _ := cmd.Flags().GetString("path")
-		kcg.WriteConfig(path)
+		WriteConfig(path)
 		fmt.Println("Create config file at: " + viper.ConfigFileUsed())
 	},
 }
@@ -68,7 +70,7 @@ var configureSetCmd = &cobra.Command{
 			config.Repos[args[0]].Setup = setup
 		}
 		viper.Set("repos", config.Repos)
-		kcg.WriteConfig("")
+		WriteConfig("")
 	},
 }
 
@@ -81,7 +83,7 @@ var configureDeleteCmd = &cobra.Command{
 		initRepo()
 		delete(config.Repos, args[0])
 		viper.Set("repos", config.Repos)
-		kcg.WriteConfig("")
+		WriteConfig("")
 	},
 }
 
@@ -105,4 +107,19 @@ func initRepo() {
 	if config.Repos == nil {
 		config.Repos = map[string]*kcg.RepositoryConfig{}
 	}
+}
+
+func WriteConfig(path string) {
+	if path != "" {
+		viper.SetConfigFile(path)
+	}
+
+	if viper.ConfigFileUsed() == "" {
+		home, err := os.UserHomeDir()
+		cobra.CheckErr(err)
+		viper.SetConfigFile(filepath.Join(home, ".kcg"))
+	}
+
+	viper.SetTypeByDefaultValue(false)
+	viper.WriteConfig()
 }
