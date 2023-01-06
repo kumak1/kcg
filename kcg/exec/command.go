@@ -54,7 +54,9 @@ func GhqList() map[string]string {
 			cmd := exec.Command("git", "config", "--get", "remote.origin.url")
 			cmd.Dir = path
 			url, _ := cmd.Output()
-			pathList[filepath.Base(path)] = strings.TrimRight(string(url), "\n")
+			organization := filepath.Base(filepath.Dir(path))
+			repository := filepath.Base(path)
+			pathList[organization+"/"+repository] = strings.TrimRight(string(url), "\n")
 		}
 	}
 	return pathList
