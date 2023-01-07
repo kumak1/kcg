@@ -18,6 +18,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/kumak1/kcg/kcg"
+	kcgExec "github.com/kumak1/kcg/kcg/exec"
+	"github.com/spf13/viper"
 
 	"github.com/spf13/cobra"
 )
@@ -36,6 +38,22 @@ var cloneCmd = &cobra.Command{
 			if err := kcgCmd.Clone(repo); err != nil {
 				fmt.Println(err)
 			}
+		}
+
+		if config.Ghq {
+			for index, repo := range kcgCmd.List("", "") {
+				if repo.Path != "" {
+					continue
+				}
+
+				fmt.Println(index)
+				if path, err := kcgExec.GhqPath(repo.Repo); err == nil {
+					config.Repos[index].Path = path
+					fmt.Println(path)
+				}
+			}
+			viper.Set("repos", config.Repos)
+			WriteConfig("")
 		}
 	},
 }
