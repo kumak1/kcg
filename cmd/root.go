@@ -92,3 +92,8 @@ func initConfig() {
 		os.Exit(1)
 	}
 }
+
+func assignSearchFlags(cmd *cobra.Command) {
+	cmd.Flags().StringP("group", "g", "", "repository group name")
+	cmd.Flags().StringP("filter", "f", "", "repository filter")
+}

@@ -46,7 +46,5 @@ var setupCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(setupCmd)
-	setupCmd.Flags().String("repo", "", "repository name")
-	setupCmd.Flags().String("group", "", "repository group name")
-	setupCmd.Flags().String("filter", "", "repository filter")
+	assignSearchFlags(setupCmd)
 }

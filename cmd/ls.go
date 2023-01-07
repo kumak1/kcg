@@ -49,6 +49,5 @@ var lsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
-	lsCmd.Flags().String("group", "", "repository group name")
-	lsCmd.Flags().String("filter", "", "repository filter")
+	assignSearchFlags(lsCmd)
 }

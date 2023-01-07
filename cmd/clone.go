@@ -60,6 +60,5 @@ var cloneCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(cloneCmd)
-	cloneCmd.Flags().String("group", "", "repository group name")
-	cloneCmd.Flags().String("filter", "", "repository filter")
+	assignSearchFlags(cloneCmd)
 }

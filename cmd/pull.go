@@ -46,6 +46,5 @@ var pullCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(pullCmd)
-	pullCmd.Flags().String("group", "", "repository group name")
-	pullCmd.Flags().String("filter", "", "repository filter")
+	assignSearchFlags(pullCmd)
 }

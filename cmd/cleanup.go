@@ -46,6 +46,5 @@ var cleanupCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(cleanupCmd)
-	cleanupCmd.Flags().String("group", "", "repository group name")
-	cleanupCmd.Flags().String("filter", "", "repository filter")
+	assignSearchFlags(cleanupCmd)
 }

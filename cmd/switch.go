@@ -53,7 +53,5 @@ var switchCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(switchCmd)
-	switchCmd.Flags().String("repo", "", "repository name")
-	switchCmd.Flags().String("group", "", "repository group name")
-	switchCmd.Flags().String("filter", "", "repository filter")
+	assignSearchFlags(switchCmd)
 }
