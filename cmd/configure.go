@@ -73,6 +73,12 @@ var configureSetCmd = &cobra.Command{
 		}
 		if repo, _ := cmd.Flags().GetString("repo"); repo != "" {
 			config.Repos[args[0]].Repo = repo
+
+			if config.Ghq {
+				if path, err := kcgExec.GhqPath(repo); err == nil {
+					config.Repos[args[0]].Path = path
+				}
+			}
 		}
 		if path, _ := cmd.Flags().GetString("path"); path != "" {
 			config.Repos[args[0]].Path = path
@@ -109,11 +115,10 @@ func init() {
 	configureInitCmd.Flags().Bool("import-from-ghq", false, "create from `ghq list`")
 
 	configureCmd.AddCommand(configureSetCmd)
-	configureSetCmd.Flags().String("repo", "", "remote repository (required)")
+	configureSetCmd.Flags().String("repo", "", "remote repository")
 	configureSetCmd.Flags().String("path", "", "local dir")
 	configureSetCmd.Flags().StringArray("groups", []string{}, "group")
 	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
-	configureSetCmd.MarkFlagRequired("repo")
 
 	configureCmd.AddCommand(configureDeleteCmd)
 }
