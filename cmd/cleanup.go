@@ -27,12 +27,11 @@ var cleanupCmd = &cobra.Command{
 	Short: "delete merged branch on each repository dir",
 	Long:  `Delete merged branch on each repository dir`,
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag, _ := cmd.Flags().GetString("repo")
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
-		for index, repo := range kcgCmd.List(repoFlag, groupFlag, filterFlag) {
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
 			if path, exists := kcgCmd.Path(repo); !exists {
 				fmt.Println("invalid path: '" + index + "' " + path)
 				continue
@@ -47,7 +46,6 @@ var cleanupCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(cleanupCmd)
-	cleanupCmd.Flags().String("repo", "", "repository name")
 	cleanupCmd.Flags().String("group", "", "repository group name")
 	cleanupCmd.Flags().String("filter", "", "repository filter")
 }

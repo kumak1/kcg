@@ -27,12 +27,11 @@ var setupCmd = &cobra.Command{
 	Short: "run setup commands on each repository",
 	Long:  `Running setup commands on each repository`,
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag, _ := cmd.Flags().GetString("repo")
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
-		for index, repo := range kcgCmd.List(repoFlag, groupFlag, filterFlag) {
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
 			if path, exists := kcgCmd.Path(repo); !exists {
 				fmt.Println("invalid path: '" + index + "' " + path)
 				continue

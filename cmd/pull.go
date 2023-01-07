@@ -27,12 +27,11 @@ var pullCmd = &cobra.Command{
 	Short: "run `git pull` on each repository dir",
 	Long:  `Running git pull command on each repository dir`,
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag, _ := cmd.Flags().GetString("repo")
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
-		for index, repo := range kcgCmd.List(repoFlag, groupFlag, filterFlag) {
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
 			if path, exists := kcgCmd.Path(repo); !exists {
 				fmt.Println("invalid path: '" + index + "' " + path)
 				continue
@@ -47,7 +46,6 @@ var pullCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(pullCmd)
-	pullCmd.Flags().String("repo", "", "repository name")
 	pullCmd.Flags().String("group", "", "repository group name")
 	pullCmd.Flags().String("filter", "", "repository filter")
 }
