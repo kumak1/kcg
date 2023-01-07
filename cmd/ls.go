@@ -29,7 +29,6 @@ var lsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "Show repository list.",
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag, _ := cmd.Flags().GetString("repo")
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
@@ -38,7 +37,7 @@ var lsCmd = &cobra.Command{
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
 		fmt.Fprintln(w, "NAME\tGROUPS\tREMOTE REPO\tLOCAL PATH")
 
-		for index, repo := range kcgCmd.List(repoFlag, groupFlag, filterFlag) {
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
 			path, _ := kcgCmd.Path(repo)
 			groups := strings.Join(repo.Groups, ",")
 			fmt.Fprintln(w, index+"\t"+groups+"\t"+repo.Repo+"\t"+path)
@@ -50,7 +49,6 @@ var lsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
-	lsCmd.Flags().String("repo", "", "repository name")
 	lsCmd.Flags().String("group", "", "repository group name")
 	lsCmd.Flags().String("filter", "", "repository filter")
 }

@@ -26,7 +26,7 @@ func Command(config Config) GitOperateInterface {
 type GitOperateInterface interface {
 	Cleanup(*RepositoryConfig) error
 	Clone(*RepositoryConfig) error
-	List(string, string, string) map[string]*RepositoryConfig
+	List(string, string) map[string]*RepositoryConfig
 	Path(*RepositoryConfig) (string, bool)
 	Pull(*RepositoryConfig) error
 	Setup(*RepositoryConfig) error
@@ -77,18 +77,18 @@ func (g ghq) Clone(config *RepositoryConfig) error {
 	return cmd.Run()
 }
 
-func (g git) List(repository string, group string, filter string) map[string]*RepositoryConfig {
-	return list(repository, group, filter)
+func (g git) List(group string, filter string) map[string]*RepositoryConfig {
+	return list(group, filter)
 }
 
-func (g ghq) List(repository string, group string, filter string) map[string]*RepositoryConfig {
-	return list(repository, group, filter)
+func (g ghq) List(group string, filter string) map[string]*RepositoryConfig {
+	return list(group, filter)
 }
 
-func list(repository string, group string, filter string) map[string]*RepositoryConfig {
+func list(group string, filter string) map[string]*RepositoryConfig {
 	repositoryConfigs := map[string]*RepositoryConfig{}
 	for index, repo := range repositoryConfig {
-		if validRepo(repository, index) && validGroup(group, repo.Groups) && validFilter(filter, index) {
+		if validGroup(group, repo.Groups) && validFilter(filter, index) {
 			repositoryConfigs[index] = repo
 		}
 	}
@@ -184,10 +184,6 @@ func setup(path string, commands []string) error {
 	}
 
 	return nil
-}
-
-func validRepo(repoFlag string, index string) bool {
-	return repoFlag == "" || repoFlag == index
 }
 
 func validGroup(groupFlag string, groups []string) bool {
