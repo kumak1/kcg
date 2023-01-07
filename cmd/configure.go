@@ -47,6 +47,10 @@ var configureInitCmd = &cobra.Command{
 					config.Repos[index] = &kcg.RepositoryConfig{}
 				}
 				config.Repos[index].Repo = repo
+
+				if path, err := kcgExec.GhqPath(repo); err == nil {
+					config.Repos[index].Path = path
+				}
 			}
 		}
 

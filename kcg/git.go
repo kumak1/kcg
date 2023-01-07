@@ -100,6 +100,10 @@ func (g git) Path(config *RepositoryConfig) (string, bool) {
 }
 
 func (g ghq) Path(config *RepositoryConfig) (string, bool) {
+	if config.Path != "" {
+		return config.Path, kcgExec.FileExists(config.Path)
+	}
+
 	path, _ := kcgExec.GhqPath(config.Repo)
 	return path, kcgExec.FileExists(path)
 }
