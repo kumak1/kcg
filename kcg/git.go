@@ -106,7 +106,7 @@ func list(group string, filter string) map[string]*RepositoryConfig {
 }
 
 func (g git) Path(config *RepositoryConfig) (string, bool) {
-	return config.Path, kcgExec.FileExists(config.Path)
+	return config.Path, config.Path != "" && kcgExec.FileExists(config.Path)
 }
 
 func (g ghq) Path(config *RepositoryConfig) (string, bool) {
@@ -114,7 +114,7 @@ func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 		return config.Path, kcgExec.FileExists(config.Path)
 	} else {
 		path, _ := kcgExec.GhqPath(config.Repo)
-		return path, kcgExec.FileExists(path)
+		return path, path != "" && kcgExec.FileExists(path)
 	}
 }
 
