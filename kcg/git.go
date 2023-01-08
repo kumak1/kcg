@@ -10,20 +10,20 @@ import (
 
 var repositoryConfig map[string]*RepositoryConfig
 
-func Command(config Config) GitOperateInterface {
+func Command(config Config) IGitOperator {
 	repositoryConfig = config.Repos
 
-	var gitOperator GitOperateInterface
+	var operator IGitOperator
 	if config.Ghq {
-		gitOperator = ghq{}
+		operator = ghq{}
 	} else {
-		gitOperator = git{}
+		operator = git{}
 	}
 
-	return gitOperator
+	return operator
 }
 
-type GitOperateInterface interface {
+type IGitOperator interface {
 	Cleanup(*RepositoryConfig) error
 	Clone(*RepositoryConfig) error
 	List(string, string) map[string]*RepositoryConfig
