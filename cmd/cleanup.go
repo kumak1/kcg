@@ -32,7 +32,7 @@ var cleanupCmd = &cobra.Command{
 		kcgCmd := kcg.Command(config)
 
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("  \x1b[32m%s\x1b[0m %s\n", "run", index)
+			fmt.Printf("  \x1b[32m%s\x1b[0m %s\n", "on", index)
 			if err := kcgCmd.Cleanup(repo); err != nil {
 				fmt.Println(err)
 			}
