@@ -169,33 +169,33 @@ func switchBranch(path string, branch string) error {
 }
 
 func (g git) Setup(config *RepositoryConfig) error {
-	return setup(config.Path, config.Setup)
+	if path, exists := g.Path(config); exists {
+		return setup(path, config.Setup)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
 }
 
 func (g ghq) Setup(config *RepositoryConfig) error {
-	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
-		return err
-	} else {
+	if path, exists := g.Path(config); exists {
 		return setup(path, config.Setup)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
 }
 
 func setup(path string, commands []string) error {
-	fmt.Println("\n" + path)
-
 	if len(commands) == 0 {
-		fmt.Println("no settings.")
+		return fmt.Errorf("    \x1b[33m%s\x1b[0m", "not exists")
 	}
 
 	for _, setupCommand := range commands {
-		fmt.Println("run: " + setupCommand)
+		fmt.Printf("    \x1b[32m%s\x1b[0m %s\n", "setup", setupCommand)
 		cmd := exec.Command("sh", "-c", setupCommand)
 		cmd.Dir = path
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		err := cmd.Run()
-
-		if err != nil {
+		if err := cmd.Run(); err != nil {
 			return err
 		}
 	}
