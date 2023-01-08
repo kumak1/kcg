@@ -119,19 +119,22 @@ func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 }
 
 func (g git) Pull(config *RepositoryConfig) error {
-	return pull(config.Path)
+	if path, exists := g.Path(config); exists {
+		return pull(path)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
 }
 
 func (g ghq) Pull(config *RepositoryConfig) error {
-	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
-		return err
-	} else {
+	if path, exists := g.Path(config); exists {
 		return pull(path)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
 }
 
 func pull(path string) error {
-	fmt.Println(path)
 	cmd := exec.Command("git", "pull")
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
