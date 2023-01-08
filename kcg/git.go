@@ -29,7 +29,7 @@ type IGitOperator interface {
 	List(string, string) map[string]*RepositoryConfig
 	Path(*RepositoryConfig) (string, bool)
 	Pull(*RepositoryConfig) error
-	Setup(*RepositoryConfig) error
+	Run(*RepositoryConfig, string) error
 	Switch(*RepositoryConfig, string) error
 }
 
@@ -142,6 +142,30 @@ func pull(path string) error {
 	return cmd.Run()
 }
 
+func (g git) Run(config *RepositoryConfig, command string) error {
+	if path, exists := g.Path(config); exists {
+		return run(path, command)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
+}
+
+func (g ghq) Run(config *RepositoryConfig, command string) error {
+	if path, exists := g.Path(config); exists {
+		return run(path, command)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
+}
+
+func run(path string, command string) error {
+	cmd := exec.Command("sh", "-c", command)
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
+
 func (g git) Switch(config *RepositoryConfig, branch string) error {
 	if path, exists := g.Path(config); exists {
 		return switchBranch(path, branch)
@@ -168,41 +192,6 @@ func switchBranch(path string, branch string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
-}
-
-func (g git) Setup(config *RepositoryConfig) error {
-	if path, exists := g.Path(config); exists {
-		return setup(path, config.Setup)
-	} else {
-		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
-	}
-}
-
-func (g ghq) Setup(config *RepositoryConfig) error {
-	if path, exists := g.Path(config); exists {
-		return setup(path, config.Setup)
-	} else {
-		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
-	}
-}
-
-func setup(path string, commands []string) error {
-	if len(commands) == 0 {
-		return fmt.Errorf("    \x1b[33m%s\x1b[0m", "not exists")
-	}
-
-	for _, setupCommand := range commands {
-		fmt.Printf("    \x1b[32m%s\x1b[0m %s\n", "setup", setupCommand)
-		cmd := exec.Command("sh", "-c", setupCommand)
-		cmd.Dir = path
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func validGroup(groupFlag string, groups []string) bool {
