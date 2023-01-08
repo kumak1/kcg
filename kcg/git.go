@@ -62,18 +62,25 @@ func cleanup(path string) error {
 }
 
 func (g git) Clone(config *RepositoryConfig) error {
-	if kcgExec.DirExists(config.Path) {
-		fmt.Println("exists: " + config.Path)
-		return nil
+	if config.Repo == "" {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "error", "repo is empty")
 	}
 
-	cmd := exec.Command("git", "clone", config.Repo, config.Path)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	if path, exists := g.Path(config); exists {
+		return fmt.Errorf("    \x1b[33m%s\x1b[0m %s", "exists", path)
+	} else {
+		cmd := exec.Command("git", "clone", config.Repo, path)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	}
 }
 
 func (g ghq) Clone(config *RepositoryConfig) error {
+	if config.Repo == "" {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "error", "repo is empty")
+	}
+
 	cmd := exec.Command("ghq", "get", config.Repo)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
