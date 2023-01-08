@@ -143,22 +143,24 @@ func pull(path string) error {
 }
 
 func (g git) Switch(config *RepositoryConfig, branch string) error {
-	return switchBranch(config.Path, branch)
+	if path, exists := g.Path(config); exists {
+		return switchBranch(path, branch)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
 }
 
 func (g ghq) Switch(config *RepositoryConfig, branch string) error {
-	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
-		return err
-	} else {
+	if path, exists := g.Path(config); exists {
 		return switchBranch(path, branch)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
 }
 
 func switchBranch(path string, branch string) error {
-	fmt.Println(path)
 	if !kcgExec.BranchExists(path, branch) {
-		fmt.Println("'" + branch + "' branch is not exists.")
-		return nil
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", branch)
 	}
 
 	cmd := exec.Command("git", "switch", branch)
