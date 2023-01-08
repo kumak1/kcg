@@ -38,19 +38,22 @@ type git struct{}
 type ghq struct{}
 
 func (g git) Cleanup(config *RepositoryConfig) error {
-	return cleanup(config.Path)
+	if path, exists := g.Path(config); exists {
+		return cleanup(path)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
 }
 
 func (g ghq) Cleanup(config *RepositoryConfig) error {
-	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
-		return err
-	} else {
+	if path, exists := g.Path(config); exists {
 		return cleanup(path)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
 }
 
 func cleanup(path string) error {
-	fmt.Println(path)
 	cmd := exec.Command("sh", "-c", "git branch --merged|egrep -v '\\*|develop|main|master'|xargs git branch -d")
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
@@ -102,10 +105,10 @@ func (g git) Path(config *RepositoryConfig) (string, bool) {
 func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 	if config.Path != "" {
 		return config.Path, kcgExec.FileExists(config.Path)
+	} else {
+		path, _ := kcgExec.GhqPath(config.Repo)
+		return path, kcgExec.FileExists(path)
 	}
-
-	path, _ := kcgExec.GhqPath(config.Repo)
-	return path, kcgExec.FileExists(path)
 }
 
 func (g git) Pull(config *RepositoryConfig) error {
