@@ -83,8 +83,8 @@ var configureSetCmd = &cobra.Command{
 		if path, _ := cmd.Flags().GetString("path"); path != "" {
 			config.Repos[args[0]].Path = path
 		}
-		if groups, _ := cmd.Flags().GetStringArray("groups"); len(groups) != 0 {
-			config.Repos[args[0]].Groups = groups
+		if group, _ := cmd.Flags().GetStringArray("group"); len(group) != 0 {
+			config.Repos[args[0]].Group = group
 		}
 		if setup, _ := cmd.Flags().GetStringArray("setup"); len(setup) != 0 {
 			config.Repos[args[0]].Setup = setup
@@ -117,7 +117,7 @@ func init() {
 	configureCmd.AddCommand(configureSetCmd)
 	configureSetCmd.Flags().String("repo", "", "remote repository")
 	configureSetCmd.Flags().String("path", "", "local dir")
-	configureSetCmd.Flags().StringArray("groups", []string{}, "group")
+	configureSetCmd.Flags().StringArray("group", []string{}, "group")
 	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
 
 	configureCmd.AddCommand(configureDeleteCmd)

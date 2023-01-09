@@ -6,8 +6,8 @@ type Config struct {
 }
 
 type RepositoryConfig struct {
-	Repo   string
-	Path   string
-	Groups []string
-	Setup  []string
+	Repo  string
+	Path  string
+	Group []string
+	Setup []string
 }

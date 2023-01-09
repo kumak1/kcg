@@ -98,7 +98,7 @@ func (g ghq) List(group string, filter string) map[string]*RepositoryConfig {
 func list(group string, filter string) map[string]*RepositoryConfig {
 	repositoryConfigs := map[string]*RepositoryConfig{}
 	for index, repo := range repositoryConfig {
-		if validGroup(group, repo.Groups) && validFilter(filter, index) {
+		if validGroup(group, repo.Group) && validFilter(filter, index) {
 			repositoryConfigs[index] = repo
 		}
 	}
