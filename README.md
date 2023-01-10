@@ -16,7 +16,7 @@ brew install kcg
 
 ### minimum
 
-```shell
+```yaml
 repos:
   kcg:
     repo: git@github.com:kumak1/kcg.git
@@ -25,7 +25,7 @@ repos:
 
 if you use [ghq](https://github.com/x-motemen/ghq)
 
-```shell
+```yaml
 ghq: true
 repos:
   kcg:
@@ -34,7 +34,7 @@ repos:
 
 ### more options
 
-```shell
+```yaml
 repos:
   with_alias:
     repo: git@github.com:kumak1/with_alias.git
