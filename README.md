@@ -39,8 +39,8 @@ repos:
   with_alias:
     repo: git@github.com:kumak1/with_alias.git
     path: ~/src/github.com/kumak1/with_alias
-      alias:
-        - main:master
+    alias:
+      - main:master
   with_setup_commands:
     repo: git@github.com:kumak1/with_setup_commands.git
     path: ~/src/github.com/kumak1/with_setup_commands
