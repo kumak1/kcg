@@ -18,7 +18,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/kumak1/kcg/kcg"
-	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"github.com/spf13/viper"
 
 	"github.com/spf13/cobra"
@@ -34,7 +33,8 @@ var cloneCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
-		for _, repo := range kcgCmd.List(groupFlag, filterFlag) {
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+			fmt.Printf("  \x1b[32m%s\x1b[0m %s\n", "on", index)
 			if err := kcgCmd.Clone(repo); err != nil {
 				fmt.Println(err)
 			}
@@ -42,14 +42,8 @@ var cloneCmd = &cobra.Command{
 
 		if config.Ghq {
 			for index, repo := range kcgCmd.List("", "") {
-				if repo.Path != "" {
-					continue
-				}
-
-				fmt.Println(index)
-				if path, err := kcgExec.GhqPath(repo.Repo); err == nil {
+				if path, exists := kcgCmd.Path(repo); path != "" && exists {
 					config.Repos[index].Path = path
-					fmt.Println(path)
 				}
 			}
 			viper.Set("repos", config.Repos)

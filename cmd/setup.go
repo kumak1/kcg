@@ -32,13 +32,17 @@ var setupCmd = &cobra.Command{
 		kcgCmd := kcg.Command(config)
 
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			if path, exists := kcgCmd.Path(repo); !exists {
-				fmt.Println("invalid path: '" + index + "' " + path)
+			fmt.Printf("  \x1b[32m%s\x1b[0m %s\n", "on", index)
+			if len(repo.Setup) == 0 {
+				fmt.Printf("    \x1b[33m%s\x1b[0m %s\n", "not exists", "setup command")
 				continue
 			}
 
-			if err := kcgCmd.Setup(repo); err != nil {
-				fmt.Println(err)
+			for _, command := range repo.Setup {
+				fmt.Printf("    \x1b[32m%s\x1b[0m %s\n", "run", command)
+				if err := kcgCmd.Run(repo, command); err != nil {
+					fmt.Println(err)
+				}
 			}
 		}
 	},

@@ -10,26 +10,26 @@ import (
 
 var repositoryConfig map[string]*RepositoryConfig
 
-func Command(config Config) GitOperateInterface {
+func Command(config Config) IGitOperator {
 	repositoryConfig = config.Repos
 
-	var gitOperator GitOperateInterface
+	var operator IGitOperator
 	if config.Ghq {
-		gitOperator = ghq{}
+		operator = ghq{}
 	} else {
-		gitOperator = git{}
+		operator = git{}
 	}
 
-	return gitOperator
+	return operator
 }
 
-type GitOperateInterface interface {
+type IGitOperator interface {
 	Cleanup(*RepositoryConfig) error
 	Clone(*RepositoryConfig) error
 	List(string, string) map[string]*RepositoryConfig
 	Path(*RepositoryConfig) (string, bool)
 	Pull(*RepositoryConfig) error
-	Setup(*RepositoryConfig) error
+	Run(*RepositoryConfig, string) error
 	Switch(*RepositoryConfig, string) error
 }
 
@@ -38,19 +38,22 @@ type git struct{}
 type ghq struct{}
 
 func (g git) Cleanup(config *RepositoryConfig) error {
-	return cleanup(config.Path)
+	if path, exists := g.Path(config); exists {
+		return cleanup(path)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
 }
 
 func (g ghq) Cleanup(config *RepositoryConfig) error {
-	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
-		return err
-	} else {
+	if path, exists := g.Path(config); exists {
 		return cleanup(path)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
 }
 
 func cleanup(path string) error {
-	fmt.Println(path)
 	cmd := exec.Command("sh", "-c", "git branch --merged|egrep -v '\\*|develop|main|master'|xargs git branch -d")
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
@@ -59,18 +62,25 @@ func cleanup(path string) error {
 }
 
 func (g git) Clone(config *RepositoryConfig) error {
-	if kcgExec.DirExists(config.Path) {
-		fmt.Println("exists: " + config.Path)
-		return nil
+	if config.Repo == "" {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "error", "repo is empty")
 	}
 
-	cmd := exec.Command("git", "clone", config.Repo, config.Path)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	if path, exists := g.Path(config); exists {
+		return fmt.Errorf("    \x1b[33m%s\x1b[0m %s", "exists", path)
+	} else {
+		cmd := exec.Command("git", "clone", config.Repo, path)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	}
 }
 
 func (g ghq) Clone(config *RepositoryConfig) error {
+	if config.Repo == "" {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "error", "repo is empty")
+	}
+
 	cmd := exec.Command("ghq", "get", config.Repo)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -88,7 +98,7 @@ func (g ghq) List(group string, filter string) map[string]*RepositoryConfig {
 func list(group string, filter string) map[string]*RepositoryConfig {
 	repositoryConfigs := map[string]*RepositoryConfig{}
 	for index, repo := range repositoryConfig {
-		if validGroup(group, repo.Groups) && validFilter(filter, index) {
+		if validGroup(group, repo.Group) && validFilter(filter, index) {
 			repositoryConfigs[index] = repo
 		}
 	}
@@ -96,32 +106,35 @@ func list(group string, filter string) map[string]*RepositoryConfig {
 }
 
 func (g git) Path(config *RepositoryConfig) (string, bool) {
-	return config.Path, kcgExec.FileExists(config.Path)
+	return config.Path, config.Path != "" && kcgExec.FileExists(config.Path)
 }
 
 func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 	if config.Path != "" {
 		return config.Path, kcgExec.FileExists(config.Path)
+	} else {
+		path, _ := kcgExec.GhqPath(config.Repo)
+		return path, path != "" && kcgExec.FileExists(path)
 	}
-
-	path, _ := kcgExec.GhqPath(config.Repo)
-	return path, kcgExec.FileExists(path)
 }
 
 func (g git) Pull(config *RepositoryConfig) error {
-	return pull(config.Path)
+	if path, exists := g.Path(config); exists {
+		return pull(path)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
 }
 
 func (g ghq) Pull(config *RepositoryConfig) error {
-	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
-		return err
-	} else {
+	if path, exists := g.Path(config); exists {
 		return pull(path)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
 }
 
 func pull(path string) error {
-	fmt.Println(path)
 	cmd := exec.Command("git", "pull")
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
@@ -129,23 +142,49 @@ func pull(path string) error {
 	return cmd.Run()
 }
 
+func (g git) Run(config *RepositoryConfig, command string) error {
+	if path, exists := g.Path(config); exists {
+		return run(path, command)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
+}
+
+func (g ghq) Run(config *RepositoryConfig, command string) error {
+	if path, exists := g.Path(config); exists {
+		return run(path, command)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
+}
+
+func run(path string, command string) error {
+	cmd := exec.Command("sh", "-c", command)
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
+
 func (g git) Switch(config *RepositoryConfig, branch string) error {
-	return switchBranch(config.Path, branch)
+	if path, exists := g.Path(config); exists {
+		return switchBranch(path, branch)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
 }
 
 func (g ghq) Switch(config *RepositoryConfig, branch string) error {
-	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
-		return err
-	} else {
+	if path, exists := g.Path(config); exists {
 		return switchBranch(path, branch)
+	} else {
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
 }
 
 func switchBranch(path string, branch string) error {
-	fmt.Println(path)
 	if !kcgExec.BranchExists(path, branch) {
-		fmt.Println("'" + branch + "' branch is not exists.")
-		return nil
+		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", branch)
 	}
 
 	cmd := exec.Command("git", "switch", branch)
@@ -153,41 +192,6 @@ func switchBranch(path string, branch string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
-}
-
-func (g git) Setup(config *RepositoryConfig) error {
-	return setup(config.Path, config.Setup)
-}
-
-func (g ghq) Setup(config *RepositoryConfig) error {
-	if path, err := kcgExec.GhqPath(config.Repo); err != nil {
-		return err
-	} else {
-		return setup(path, config.Setup)
-	}
-}
-
-func setup(path string, commands []string) error {
-	fmt.Println("\n" + path)
-
-	if len(commands) == 0 {
-		fmt.Println("no settings.")
-	}
-
-	for _, setupCommand := range commands {
-		fmt.Println("run: " + setupCommand)
-		cmd := exec.Command("sh", "-c", setupCommand)
-		cmd.Dir = path
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err := cmd.Run()
-
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func validGroup(groupFlag string, groups []string) bool {

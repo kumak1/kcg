@@ -35,12 +35,12 @@ var lsCmd = &cobra.Command{
 
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
-		fmt.Fprintln(w, "NAME\tGROUPS\tREMOTE REPO\tLOCAL PATH")
+		fmt.Fprintln(w, "NAME\tGROUP\tREMOTE REPO\tLOCAL PATH")
 
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
 			path, _ := kcgCmd.Path(repo)
-			groups := strings.Join(repo.Groups, ",")
-			fmt.Fprintln(w, index+"\t"+groups+"\t"+repo.Repo+"\t"+path)
+			group := strings.Join(repo.Group, ",")
+			fmt.Fprintln(w, index+"\t"+group+"\t"+repo.Repo+"\t"+path)
 		}
 
 		w.Flush()
