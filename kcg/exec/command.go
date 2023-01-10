@@ -37,12 +37,23 @@ func BranchExists(path string, branch string) bool {
 	return err == nil
 }
 
+func CurrentBranchName(path string) string {
+	cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	cmd.Dir = path
+	if out, err := cmd.Output(); err == nil {
+		return strings.TrimRight(string(out), "\n")
+	} else {
+		return ""
+	}
+}
+
 func GhqPath(repo string) (string, error) {
 	cmd := exec.Command("ghq", "list", "-p", "-e", repo)
-	out, err := cmd.Output()
-	path := string(out)
-	path = strings.TrimRight(path, "\n")
-	return path, err
+	if out, err := cmd.Output(); err == nil {
+		return strings.TrimRight(string(out), "\n"), err
+	} else {
+		return "", err
+	}
 }
 
 func GhqList() map[string]string {

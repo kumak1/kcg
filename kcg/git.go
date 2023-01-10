@@ -26,6 +26,7 @@ func Command(config Config) IGitOperator {
 type IGitOperator interface {
 	Cleanup(*RepositoryConfig) error
 	Clone(*RepositoryConfig) error
+	CurrentBranch(*RepositoryConfig) string
 	List(string, string) map[string]*RepositoryConfig
 	Path(*RepositoryConfig) (string, bool)
 	Pull(*RepositoryConfig) error
@@ -85,6 +86,22 @@ func (g ghq) Clone(config *RepositoryConfig) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func (g git) CurrentBranch(config *RepositoryConfig) string {
+	if path, exists := g.Path(config); exists {
+		return kcgExec.CurrentBranchName(path)
+	} else {
+		return ""
+	}
+}
+
+func (g ghq) CurrentBranch(config *RepositoryConfig) string {
+	if path, exists := g.Path(config); exists {
+		return kcgExec.CurrentBranchName(path)
+	} else {
+		return ""
+	}
 }
 
 func (g git) List(group string, filter string) map[string]*RepositoryConfig {
