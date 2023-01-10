@@ -36,6 +36,11 @@ repos:
 
 ```shell
 repos:
+  with_alias:
+    repo: git@github.com:kumak1/with_alias.git
+    path: ~/src/github.com/kumak1/with_alias
+      alias:
+        - main:master
   with_setup_commands:
     repo: git@github.com:kumak1/with_setup_commands.git
     path: ~/src/github.com/kumak1/with_setup_commands
@@ -44,12 +49,12 @@ repos:
   with_groups:
     repo: git@github.com:kumak1/with_groups.git
     path: ~/src/github.com/kumak1/with_groups
-    groups:
+    group:
       - ktools
   homebrew-ktools:
     repo: git@github.com:kumak1/homebrew-ktools.git
     path: ~/src/github.com/kumak1/homebrew-ktools
-    groups:
+    group:
       - ktools
 ```
 
@@ -76,7 +81,7 @@ Available Commands:
 Flags:
       --config string   config file (default is $HOME/.kcg)
   -h, --help            help for kcg
+  -v, --version         version for kcg
 
 Use "kcg [command] --help" for more information about a command.
-
 ```
