@@ -83,6 +83,9 @@ var configureSetCmd = &cobra.Command{
 		if path, _ := cmd.Flags().GetString("path"); path != "" {
 			config.Repos[args[0]].Path = path
 		}
+		if branchAlias, _ := cmd.Flags().GetStringArray("branch-alias"); len(branchAlias) != 0 {
+			config.Repos[args[0]].Alias = branchAlias
+		}
 		if group, _ := cmd.Flags().GetStringArray("group"); len(group) != 0 {
 			config.Repos[args[0]].Group = group
 		}
@@ -117,6 +120,7 @@ func init() {
 	configureCmd.AddCommand(configureSetCmd)
 	configureSetCmd.Flags().String("repo", "", "remote repository")
 	configureSetCmd.Flags().String("path", "", "local dir")
+	configureSetCmd.Flags().StringArray("branch-alias", []string{}, "specify like \"NAME:VALUE\"")
 	configureSetCmd.Flags().StringArray("group", []string{}, "group")
 	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
 

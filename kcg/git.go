@@ -5,6 +5,7 @@ import (
 	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -185,7 +186,7 @@ func run(path string, command string) error {
 
 func (g git) Switch(config *RepositoryConfig, branch string) error {
 	if path, exists := g.Path(config); exists {
-		return switchBranch(path, branch)
+		return switchBranch(path, convertedBranch(config.Alias, branch))
 	} else {
 		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
@@ -193,7 +194,7 @@ func (g git) Switch(config *RepositoryConfig, branch string) error {
 
 func (g ghq) Switch(config *RepositoryConfig, branch string) error {
 	if path, exists := g.Path(config); exists {
-		return switchBranch(path, branch)
+		return switchBranch(path, convertedBranch(config.Alias, branch))
 	} else {
 		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
 	}
@@ -209,6 +210,22 @@ func switchBranch(path string, branch string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func convertedBranch(branchArias []string, branch string) string {
+	if len(branchArias) == 0 {
+		return branch
+	}
+
+	rep := regexp.MustCompile(`^[A-Za-z0-9\\\-._]+:[A-Za-z0-9\\\-._]+$`)
+	for _, alias := range branchArias {
+		if rep.MatchString(alias) {
+			if val := strings.Split(alias, ":"); branch == val[0] {
+				return val[1]
+			}
+		}
+	}
+	return branch
 }
 
 func validGroup(groupFlag string, groups []string) bool {
