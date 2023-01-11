@@ -54,7 +54,10 @@ go get github.com/kumak1/kcg@latest
 
 ### 設定ファイル
 
-デフォルトの設定ファイルは `~/.kcg` に配置します。 
+デフォルトの設定ファイルは `~/.kcg` に配置します。
+
+#### 初期化
+
 設定ファイルが存在しない場合は、以下のコマンドで生成します。
 
 ```shell
@@ -81,7 +84,7 @@ Global Flags:
 ```
 </details>
 
-設定を追加・更新をする場合は、以下のコマンドを実行します。
+#### 追加・更新
 
 ```shell
  kcg configure set <name> --repo="git@github.com:kumak1/kcg.git" --path="~/src/github.com/kumak1/kcg/"
@@ -111,7 +114,7 @@ Global Flags:
 
 </details>
 
-設定を削除したい場合は、以下のコマンドを実行します。
+#### 削除
 
 ```shell
 kcg configure delete <name>
@@ -124,7 +127,6 @@ kcg configure delete <name>
 ```shell
 kcg configure init --import-from-ghq
 ```
-
 
 ## 基本的な使い方
 

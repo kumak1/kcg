@@ -52,11 +52,11 @@ go get github.com/kumak1/kcg@latest
 
 ## Getting Started
 
-### Configuration
-
 default configuration file place is `~/.kcg` .
 
-`Generate` setting file.
+### Configuration
+
+#### `Generate` setting file.
 
 ```shell
 kcg configure init
@@ -82,7 +82,7 @@ Global Flags:
 ```
 </details>
 
-`Add` or `Update` repository setting.
+#### `Add` or `Update` repository setting.
 
 ```shell
  kcg configure set <name> --repo="git@github.com:kumak1/kcg.git" --path="~/src/github.com/kumak1/kcg/"
@@ -112,7 +112,7 @@ Global Flags:
 
 </details>
 
-`Delete` repository setting.
+#### `Delete` repository setting.
 
 ```shell
 kcg configure delete <name>
