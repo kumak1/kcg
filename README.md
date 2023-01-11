@@ -6,7 +6,7 @@
 ![Go version](https://img.shields.io/github/go-mod/go-version/kumak1/kcg)
 ![release](https://img.shields.io/github/v/release/kumak1/kcg)
 
-[ÆüËÜ¸ì¥É¥­¥å¥á¥ó¥È(Japanese Documents Available)](README_JA.md)
+[æ—¥æœ¬èªžãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ (Japanese Documents Available)](README_JA.md)
 
 kumak1 Convenient Git tools.
 inspired by [pdr](https://github.com/pyama86/pdr).

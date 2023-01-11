@@ -6,19 +6,19 @@
 ![Go version](https://img.shields.io/github/go-mod/go-version/kumak1/kcg)
 ![release](https://img.shields.io/github/v/release/kumak1/kcg)
 
-[English Documents Available(�Ѹ�ɥ������)](README.md)
+[English Documents Available(英語ドキュメント)](README.md)
 
 kumak1 Convenient Git tools.
 inspired by [pdr](https://github.com/pyama86/pdr).
 
-## �ܼ�
+## 目次
 
-- [����](#����)
-- [���󥹥ȡ���](#���󥹥ȡ���)
-- [���åȥ��å�](#���åȥ��å�)
-  - [����ե�����](#����ե�����)
-    - [ghq���ѼԤξ��](#ghq���ѼԤξ��)
-- [����Ū�ʻȤ���](#����Ū�ʻȤ���)
+- [概要](#概要)
+- [インストール](#インストール)
+- [セットアップ](#セットアップ)
+  - [設定ファイル](#設定ファイル)
+    - [ghq利用者の場合](#ghq利用者の場合)
+- [基本的な使い方](#基本的な使い方)
   - [clone](#clone)
   - [ls](#ls)
   - [cleanup](#cleanup)
@@ -26,16 +26,16 @@ inspired by [pdr](https://github.com/pyama86/pdr).
   - [pull](#pull)
   - [Command Details](#command-details)
 
-## ����
+## 概要
 
-���ץ곫ȯ��ʣ����ݥ��ȥ����Ѥ��Ƥ��ꡢ���줾�죱�ģ��� `git switch main` �� `git pull` ����Τ��Ѥ路�����������Ȥ����뤫�Ȼפ��ޤ��� `kcg` �Ϥ��μ�֤򾯤��������餷�Ƥ����ġ���Ǥ���
+アプリ開発で複数リポジトリ利用しており、それぞれ１つ１つ `git switch main` や `git pull` するのが煩わしく感じたことがあるかと思います。 `kcg` はこの手間を少しだけ減らしてくれるツールです。
 
-#### ��ħ
+#### 特徴
 
-- ʣ���Υ�ݥ��ȥ���ñ�˴�������
-- �оݤ� `filter` �� `group` �ǹʤꤳ���
+- 複数のリポジトリを簡単に管理する
+- 対象を `filter` や `group` で絞りこめる
 
-## ���󥹥ȡ���
+## インストール
 
 #### homebrew
 
@@ -50,12 +50,12 @@ brew install kcg
 go get github.com/kumak1/kcg@latest
 ```
 
-## ���åȥ��å�
+## セットアップ
 
-### ����ե�����
+### 設定ファイル
 
-�ǥե���Ȥ�����ե������ `~/.kcg` �����֤��ޤ��� 
-����ե����뤬¸�ߤ��ʤ����ϡ��ʲ��Υ��ޥ�ɤ��������ޤ���
+デフォルトの設定ファイルは `~/.kcg` に配置します。 
+設定ファイルが存在しない場合は、以下のコマンドで生成します。
 
 ```shell
 kcg configure init
@@ -81,7 +81,7 @@ Global Flags:
 ```
 </details>
 
-������ɲá������򤹤���ϡ��ʲ��Υ��ޥ�ɤ�¹Ԥ��ޤ���
+設定を追加・更新をする場合は、以下のコマンドを実行します。
 
 ```shell
  kcg configure set <name> --repo="git@github.com:kumak1/kcg.git" --path="~/src/github.com/kumak1/kcg/"
@@ -111,66 +111,66 @@ Global Flags:
 
 </details>
 
-����������������ϡ��ʲ��Υ��ޥ�ɤ�¹Ԥ��ޤ���
+設定を削除したい場合は、以下のコマンドを実行します。
 
 ```shell
 kcg configure delete <name>
 ```
 
-#### ghq���ѼԤξ��
+#### ghq利用者の場合
 
-[ghq](https://github.com/x-motemen/ghq) ���ޥ�ɤ����Ѥ��Ƥ����硢�ʲ��Υ��ޥ�ɤ� ghq �Ǵ������Ƥ����ݥ��ȥ�򸵤�����ե�����������Ǥ��ޤ���
+[ghq](https://github.com/x-motemen/ghq) コマンドを利用している場合、以下のコマンドで ghq で管理しているリポジトリを元に設定ファイルを生成できます。
 
 ```shell
 kcg configure init --import-from-ghq
 ```
 
 
-## ����Ū�ʻȤ���
+## 基本的な使い方
 
 ### clone
 
-����ե�����˵��ܤ��줿��ݥ��ȥ�� `git clone` ���ޤ���
+設定ファイルに記載されたリポジトリを `git clone` します。
 
 ```shell
 kcg clone
 ```
 
-`--filter="needle"` �� `--group="group_name"` ���оݤ��ݥ��ȥ��ʤ뤳�Ȥ���ǽ�Ǥ���
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
 ### ls
 
-����ե�����˵��ܤ��줿��ݥ��ȥ�ξ��֤�������ޤ���
+設定ファイルに記載されたリポジトリの状態を一覧します。
 
 ```shell
 kcg ls
 ```
 
-`--filter="needle"` �� `--group="group_name"` ���оݤ��ݥ��ȥ��ʤ뤳�Ȥ���ǽ�Ǥ���
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
 ### cleanup
 
-����ե�����˵��ܤ��줿��ݥ��ȥ�� local branch �Τ�����remote �� merge �Ѥߤ� branch �������ޤ���
+設定ファイルに記載されたリポジトリの local branch のうち、remote で merge 済みの branch を削除します。
 
 ```shell
 kcg cleanup
 ```
 
-`--filter="needle"` �� `--group="group_name"` ���оݤ��ݥ��ȥ��ʤ뤳�Ȥ���ǽ�Ǥ���
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
 ### switch
 
-����ե�����˵��ܤ��줿��ݥ��ȥ�� `git switch` ���ޤ���
+設定ファイルに記載されたリポジトリを `git switch` します。
 
 ```shell
 kcg switch <branch_name>
 ```
 
-`--filter="needle"` �� `--group="group_name"` ���оݤ��ݥ��ȥ��ʤ뤳�Ȥ���ǽ�Ǥ���
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
-#### default branch �� main �� master �����ߤ�����
+#### default branch に main と master が混在する場合
 
-�ʲ��Υ��ޥ�ɤ� branch ̾�Υ����ꥢ������: `main` ����ꤷ���� `master` ����� �ˤ�����Ǥ��ޤ���
+以下のコマンドで branch 名のエイリアス（例: `main` を指定したら `master` を操作 ）を設定できます。
 
 ```shell
 kcg configure set <name> --branch-alias="main:master"
@@ -178,13 +178,13 @@ kcg configure set <name> --branch-alias="main:master"
 
 ### pull
 
-����ե�����˵��ܤ��줿��ݥ��ȥ�� `git pull` ���ޤ���
+設定ファイルに記載されたリポジトリを `git pull` します。
 
 ```shell
 kcg pull
 ```
 
-`--filter="needle"` �� `--group="group_name"` ���оݤ��ݥ��ȥ��ʤ뤳�Ȥ���ǽ�Ǥ���
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
 ### Command Details
 
