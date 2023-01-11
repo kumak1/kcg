@@ -32,7 +32,7 @@ var pullCmd = &cobra.Command{
 		kcgCmd := kcg.Command(config)
 
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("  \x1b[32m%s\x1b[0m %s\n", "on", index)
+			fmt.Printf("\x1b[32m%s\x1b[0m %s\n", "on", index)
 			if err := kcgCmd.Pull(repo); err != nil {
 				fmt.Println(err)
 			}

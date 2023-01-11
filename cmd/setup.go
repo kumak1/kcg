@@ -32,7 +32,7 @@ var setupCmd = &cobra.Command{
 		kcgCmd := kcg.Command(config)
 
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("  \x1b[32m%s\x1b[0m %s\n", "on", index)
+			fmt.Printf("\x1b[32m%s\x1b[0m %s\n", "on", index)
 			if len(repo.Setup) == 0 {
 				fmt.Printf("    \x1b[33m%s\x1b[0m %s\n", "not exists", "setup command")
 				continue
