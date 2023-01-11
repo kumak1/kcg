@@ -6,36 +6,36 @@
 ![Go version](https://img.shields.io/github/go-mod/go-version/kumak1/kcg)
 ![release](https://img.shields.io/github/v/release/kumak1/kcg)
 
-[日本語ドキュメント(Japanese Documents Available)](README_JA.md)
+[English Documents Available(英語ドキュメント)](README.md)
 
 kumak1 Convenient Git tools.
 inspired by [pdr](https://github.com/pyama86/pdr).
 
-## Table of Contents
+## 目次
 
-- [Overview](#overview)
-- [Install](#install)
-- [Getting Started](#getting-started)
-    - [Configuration](#configuration)
-        - [For ghq user](#for-ghq-user)
-- [Usage](#usage)
-    - [clone](#clone)
-    - [ls](#ls)
-    - [cleanup](#cleanup)
-    - [switch](#switch)
-    - [pull](#pull)
-    - [Command Details](#command-details)
+- [概要](#概要)
+- [インストール](#インストール)
+- [セットアップ](#セットアップ)
+  - [設定ファイル](#設定ファイル)
+    - [ghq利用者の場合](#ghq利用者の場合)
+- [基本的な使い方](#基本的な使い方)
+  - [clone](#clone)
+  - [ls](#ls)
+  - [cleanup](#cleanup)
+  - [switch](#switch)
+  - [pull](#pull)
+  - [Command Details](#command-details)
 
-## Overview
+## 概要
 
-If you use multiple repositories in your application development, you may have found it tedious to `git switch main` and `git pull` for each one. `kcg` is a tool that reduces this hassle a little.
+アプリ開発で複数リポジトリ利用しており、それぞれ１つ１つ `git switch main` や `git pull` するのが煩わしく感じたことがあるかと思います。 `kcg` はこの手間を少しだけ減らしてくれるツールです。
 
-#### Features
+#### 特徴
 
-- Easily manage multiple repositories
-- Narrow down the target with `filter` or `group` option.
+- 複数のリポジトリを簡単に管理する
+- 対象を `filter` や `group` で絞りこめる
 
-## Install
+## インストール
 
 #### homebrew
 
@@ -50,13 +50,12 @@ brew install kcg
 go get github.com/kumak1/kcg@latest
 ```
 
-## Getting Started
+## セットアップ
 
-### Configuration
+### 設定ファイル
 
-default configuration file place is `~/.kcg` .
-
-`Generate` setting file.
+デフォルトの設定ファイルは `~/.kcg` に配置します。 
+設定ファイルが存在しない場合は、以下のコマンドで生成します。
 
 ```shell
 kcg configure init
@@ -82,7 +81,7 @@ Global Flags:
 ```
 </details>
 
-`Add` or `Update` repository setting.
+設定を追加・更新をする場合は、以下のコマンドを実行します。
 
 ```shell
  kcg configure set <name> --repo="git@github.com:kumak1/kcg.git" --path="~/src/github.com/kumak1/kcg/"
@@ -112,66 +111,66 @@ Global Flags:
 
 </details>
 
-`Delete` repository setting.
+設定を削除したい場合は、以下のコマンドを実行します。
 
 ```shell
 kcg configure delete <name>
 ```
 
-#### For ghq user
+#### ghq利用者の場合
 
-If you are using [ghq](https://github.com/x-motemen/ghq), you can import repository settings.
+[ghq](https://github.com/x-motemen/ghq) コマンドを利用している場合、以下のコマンドで ghq で管理しているリポジトリを元に設定ファイルを生成できます。
 
 ```shell
 kcg configure init --import-from-ghq
 ```
 
-## Usage
+
+## 基本的な使い方
 
 ### clone
 
-Run `git clone` on each repository in configure file.
+設定ファイルに記載されたリポジトリを `git clone` します。
 
 ```shell
 kcg clone
 ```
 
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"` 
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
 ### ls
 
-Show repository data in configuration file.
+設定ファイルに記載されたリポジトリの状態を一覧します。
 
 ```shell
 kcg ls
 ```
 
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
 ### cleanup
 
-Delete merged branch on each repository in configuration file.
+設定ファイルに記載されたリポジトリの local branch のうち、remote で merge 済みの branch を削除します。
 
 ```shell
 kcg cleanup
 ```
 
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
 ### switch
 
-Run `git switch` on each repository in configure file.
+設定ファイルに記載されたリポジトリを `git switch` します。
 
 ```shell
 kcg switch <branch_name>
 ```
 
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
-#### When main and master are mixed in the default branch
+#### default branch に main と master が混在する場合
 
-Setting branch name alias.
-example: `main` to `master`
+以下のコマンドで branch 名のエイリアス（例: `main` を指定したら `master` を操作 ）を設定できます。
 
 ```shell
 kcg configure set <name> --branch-alias="main:master"
@@ -179,13 +178,13 @@ kcg configure set <name> --branch-alias="main:master"
 
 ### pull
 
-Run `git pull` on each repository in configure file.
+設定ファイルに記載されたリポジトリを `git pull` します。
 
 ```shell
 kcg pull
 ```
 
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
+`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
 ### Command Details
 
