@@ -110,8 +110,8 @@ kcg configure init --import-from-ghq
 | `kcg ls`                   | リポジトリの状態を一覧表示します。                                         |
 | `kcg cleanup`              | リポジトリの local branch のうち、remote で merge 済みの branch を削除します。 |
 | `kcg clone`                | リポジトリを `git clone` します。                                   |
-| `kcg switch <branch_name>` | リポジトリを `git switch` します。                                  |
 | `kcg pull`                 | リポジトリを `git pull` します。                                    |
+| `kcg switch <branch_name>` | リポジトリを `git switch` します。                                  |
 
 上記のコマンド全てで `--filter="needle"` や `--group="group_name"` オプションによって対象リポジトリを絞ることが可能です。
 
@@ -129,10 +129,10 @@ Available Commands:
   clone       run `git clone` each repository
   completion  Generate the autocompletion script for the specified shell
   configure   Operate config file
+  exec        Run commands on each repository
   help        Help about any command
   ls          Show repository list.
   pull        run `git pull` on each repository dir
-  setup       run setup commands on each repository
   switch      run `git switch` on each repository dir
 
 Flags:

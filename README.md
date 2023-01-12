@@ -107,8 +107,8 @@ kcg configure init --import-from-ghq
 | `kcg ls`                   | Show repository data in configuration file.                    |
 | `kcg cleanup`              | Delete merged branch on each repository in configuration file. |
 | `kcg clone`                | Run `git clone` on each repository in configure file.          |
-| `kcg switch <branch_name>` | Run `git switch` on each repository in configure file.         |
 | `kcg pull`                 | Run `git pull` on each repository in configure file.           |
+| `kcg switch <branch_name>` | Run `git switch` on each repository in configure file.         |
 
 Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
 
@@ -126,10 +126,10 @@ Available Commands:
   clone       run `git clone` each repository
   completion  Generate the autocompletion script for the specified shell
   configure   Operate config file
+  exec        Run commands on each repository
   help        Help about any command
   ls          Show repository list.
   pull        run `git pull` on each repository dir
-  setup       run setup commands on each repository
   switch      run `git switch` on each repository dir
 
 Flags:
