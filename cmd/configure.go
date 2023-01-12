@@ -92,6 +92,9 @@ var configureSetCmd = &cobra.Command{
 		if setup, _ := cmd.Flags().GetStringArray("setup"); len(setup) != 0 {
 			config.Repos[args[0]].Setup = setup
 		}
+		if update, _ := cmd.Flags().GetStringArray("update"); len(update) != 0 {
+			config.Repos[args[0]].Update = update
+		}
 		viper.Set("repos", config.Repos)
 		WriteConfig("")
 	},
@@ -151,6 +154,22 @@ var configureAddSetupCmd = &cobra.Command{
 	},
 }
 
+var configureAddUpdateCmd = &cobra.Command{
+	Use:   "update <name> <command>",
+	Short: "Add update command",
+	Long:  `Add update command`,
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if _, ok := config.Repos[args[0]]; ok {
+			config.Repos[args[0]].Update = append(config.Repos[args[0]].Update, args[1])
+			viper.Set("repos", config.Repos)
+			WriteConfig("")
+		} else {
+			fmt.Printf("    \x1b[31m%s\x1b[0m %s", "not exists", args[0])
+		}
+	},
+}
+
 var configureDeleteCmd = &cobra.Command{
 	Use:   "delete <name>",
 	Short: "Delete repository config",
@@ -198,11 +217,13 @@ func init() {
 	configureSetCmd.Flags().StringArray("branch-alias", []string{}, "specify like \"NAME:VALUE\"")
 	configureSetCmd.Flags().StringArray("group", []string{}, "group")
 	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
+	configureSetCmd.Flags().StringArray("update", []string{}, "update command")
 
 	configureCmd.AddCommand(configureAddCmd)
 	configureAddCmd.AddCommand(configureAddGroupCmd)
 	configureAddCmd.AddCommand(configureAddAliasCmd)
 	configureAddCmd.AddCommand(configureAddSetupCmd)
+	configureAddCmd.AddCommand(configureAddUpdateCmd)
 
 	configureCmd.AddCommand(configureDeleteCmd)
 }
