@@ -167,9 +167,10 @@ kcg switch <branch_name>
 
 Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
 
-#### When main and master are mixed in the default branch
+#### Tips
 
-Setting branch name alias.
+When main and master are mixed in the default branch, setting branch name alias.
+
 example: `main` to `master`
 
 ```shell

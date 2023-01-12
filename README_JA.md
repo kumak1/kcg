@@ -169,8 +169,9 @@ kcg switch <branch_name>
 
 `--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
 
-#### default branch に main と master が混在する場合
+#### Tips
 
+リポジトリの default branch に main と master が混在する場合、
 以下のコマンドで branch 名のエイリアス（例: `main` を指定したら `master` を操作 ）を設定できます。
 
 ```shell
