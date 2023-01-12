@@ -69,7 +69,7 @@ kcg configure init
 kcg configure set <name> --group="group_a" --group="group_b"
 ```
 
-管理対象リポジトリの default branch に main と master が混在する場合、
+管理対象リポジトリの default branch に `main` と `master` が混在する場合、
 以下のコマンドで branch 名のエイリアスを設定できます。
 
 例) `main` を指定したら `master` を操作

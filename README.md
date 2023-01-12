@@ -67,7 +67,7 @@ kcg configure init
 kcg configure set <name> --group="group_a" --group="group_b"
 ```
 
-When main and master are mixed in the default branch, setting branch name alias.
+When `main` and `master` are mixed in the default branch, setting branch name alias.
 
 example: `main` to `master`
 
