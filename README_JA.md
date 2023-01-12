@@ -61,55 +61,19 @@ go get github.com/kumak1/kcg@latest
 kcg configure init
 ```
 
-<details>
-<summary>more option</summary>
-
-```shell
-kcg configure init -h
-Create an empty config file
-
-Usage:
-  kcg configure init [flags]
-
-Flags:
-  -h, --help                       help for init
-      --import-from-ghq ghq list   create from ghq list
-      --path string                write config file path
-
-Global Flags:
-      --config string   config file (default is $HOME/.kcg)
-```
-</details>
-
 #### 追加・更新
 
 ```shell
  kcg configure set <name> --repo="git@github.com:kumak1/kcg.git" --path="~/src/github.com/kumak1/kcg/"
 ```
 
-<details>
-<summary>more option</summary>
+##### Tips
+
+`group` の設定をしておくと、後述の `pull` などの操作をする際に対象を絞れるので便利です。
 
 ```shell
-kcg configure set -h 
-Add repository config
-
-Usage:
-  kcg configure set <name> [flags]
-
-Flags:
-      --branch-alias stringArray   specify like "NAME:VALUE"
-      --group stringArray          group
-  -h, --help                       help for set
-      --path string                local dir
-      --repo string                remote repository
-      --setup stringArray          setup command
-
-Global Flags:
-      --config string   config file (default is $HOME/.kcg)
+kcg configure set <name> --group="group_a" --group="group_b"
 ```
-
-</details>
 
 #### 削除
 

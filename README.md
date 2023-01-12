@@ -59,55 +59,19 @@ default configuration file place is `~/.kcg` .
 kcg configure init
 ```
 
-<details>
-<summary>more option</summary>
-
-```shell
-kcg configure init -h
-Create an empty config file
-
-Usage:
-  kcg configure init [flags]
-
-Flags:
-  -h, --help                       help for init
-      --import-from-ghq ghq list   create from ghq list
-      --path string                write config file path
-
-Global Flags:
-      --config string   config file (default is $HOME/.kcg)
-```
-</details>
-
 #### `Add` or `Update` repository setting.
 
 ```shell
  kcg configure set <name> --repo="git@github.com:kumak1/kcg.git" --path="~/src/github.com/kumak1/kcg/"
 ```
 
-<details>
-<summary>more option</summary>
+##### Tips
+
+`group` option set, useful for narrow down operation.
 
 ```shell
-kcg configure set -h 
-Add repository config
-
-Usage:
-  kcg configure set <name> [flags]
-
-Flags:
-      --branch-alias stringArray   specify like "NAME:VALUE"
-      --group stringArray          group
-  -h, --help                       help for set
-      --path string                local dir
-      --repo string                remote repository
-      --setup stringArray          setup command
-
-Global Flags:
-      --config string   config file (default is $HOME/.kcg)
+kcg configure set <name> --group="group_a" --group="group_b"
 ```
-
-</details>
 
 #### `Delete` repository setting.
 
