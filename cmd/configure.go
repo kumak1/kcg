@@ -97,6 +97,60 @@ var configureSetCmd = &cobra.Command{
 	},
 }
 
+var configureAddCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add repository config",
+	Long:  `Add repository config`,
+}
+
+var configureAddAliasCmd = &cobra.Command{
+	Use:   "branch-alias <name> <alias:value>",
+	Short: "Add branch-alias config",
+	Long:  `Add branch-alias config`,
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if _, ok := config.Repos[args[0]]; ok {
+			config.Repos[args[0]].Alias = append(config.Repos[args[0]].Alias, args[1])
+			viper.Set("repos", config.Repos)
+			WriteConfig("")
+		} else {
+			fmt.Printf("    \x1b[31m%s\x1b[0m %s", "not exists", args[0])
+		}
+	},
+}
+
+var configureAddGroupCmd = &cobra.Command{
+	Use:   "group <name> <group_name>",
+	Short: "Add group config",
+	Long:  `Add group config`,
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if _, ok := config.Repos[args[0]]; ok {
+			config.Repos[args[0]].Group = append(config.Repos[args[0]].Group, args[1])
+			viper.Set("repos", config.Repos)
+			WriteConfig("")
+		} else {
+			fmt.Printf("    \x1b[31m%s\x1b[0m %s", "not exists", args[0])
+		}
+	},
+}
+
+var configureAddSetupCmd = &cobra.Command{
+	Use:   "setup <name> <command>",
+	Short: "Add setup command",
+	Long:  `Add setup command`,
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if _, ok := config.Repos[args[0]]; ok {
+			config.Repos[args[0]].Setup = append(config.Repos[args[0]].Setup, args[1])
+			viper.Set("repos", config.Repos)
+			WriteConfig("")
+		} else {
+			fmt.Printf("    \x1b[31m%s\x1b[0m %s", "not exists", args[0])
+		}
+	},
+}
+
 var configureDeleteCmd = &cobra.Command{
 	Use:   "delete <name>",
 	Short: "Delete repository config",
@@ -108,23 +162,6 @@ var configureDeleteCmd = &cobra.Command{
 		viper.Set("repos", config.Repos)
 		WriteConfig("")
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(configureCmd)
-
-	configureCmd.AddCommand(configureInitCmd)
-	configureInitCmd.Flags().String("path", "", "write config file path")
-	configureInitCmd.Flags().Bool("import-from-ghq", false, "create from `ghq list`")
-
-	configureCmd.AddCommand(configureSetCmd)
-	configureSetCmd.Flags().String("repo", "", "remote repository")
-	configureSetCmd.Flags().String("path", "", "local dir")
-	configureSetCmd.Flags().StringArray("branch-alias", []string{}, "specify like \"NAME:VALUE\"")
-	configureSetCmd.Flags().StringArray("group", []string{}, "group")
-	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
-
-	configureCmd.AddCommand(configureDeleteCmd)
 }
 
 func initRepo() {
@@ -146,4 +183,26 @@ func WriteConfig(path string) {
 
 	viper.SetTypeByDefaultValue(false)
 	viper.WriteConfig()
+}
+
+func init() {
+	rootCmd.AddCommand(configureCmd)
+
+	configureCmd.AddCommand(configureInitCmd)
+	configureInitCmd.Flags().String("path", "", "write config file path")
+	configureInitCmd.Flags().Bool("import-from-ghq", false, "create from `ghq list`")
+
+	configureCmd.AddCommand(configureSetCmd)
+	configureSetCmd.Flags().String("repo", "", "remote repository")
+	configureSetCmd.Flags().String("path", "", "local dir")
+	configureSetCmd.Flags().StringArray("branch-alias", []string{}, "specify like \"NAME:VALUE\"")
+	configureSetCmd.Flags().StringArray("group", []string{}, "group")
+	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
+
+	configureCmd.AddCommand(configureAddCmd)
+	configureAddCmd.AddCommand(configureAddGroupCmd)
+	configureAddCmd.AddCommand(configureAddAliasCmd)
+	configureAddCmd.AddCommand(configureAddSetupCmd)
+
+	configureCmd.AddCommand(configureDeleteCmd)
 }
