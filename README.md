@@ -123,6 +123,8 @@ If you are using [ghq](https://github.com/x-motemen/ghq), you can import reposit
 kcg configure init --import-from-ghq
 ```
 
+This command is non-destructive except for `--path` option configuration. recommend rerun when you have more repositories to manage with `ghq`.
+
 ## Usage
 
 ### clone

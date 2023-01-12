@@ -125,6 +125,8 @@ kcg configure delete <name>
 kcg configure init --import-from-ghq
 ```
 
+このコマンドは `--path` オプションの設定値以外は非破壊的に動作します。`ghq` で管理するリポジトリが増えたらまた実行することをおすすめします。
+
 ## 基本的な使い方
 
 ### clone
