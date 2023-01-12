@@ -68,6 +68,10 @@ kcg configure init
 ```shell
 kcg configure set <name> --group="group_a" --group="group_b"
 ```
+または
+```shell
+kcg configure add group <name> "group_c"
+```
 
 管理対象リポジトリの default branch に `main` と `master` が混在する場合、
 以下のコマンドで branch 名のエイリアスを設定できます。
@@ -76,6 +80,10 @@ kcg configure set <name> --group="group_a" --group="group_b"
 
 ```shell
 kcg configure set <name> --branch-alias="main:master"
+```
+または
+```shell
+kcg configure add branch-alias <name> "main:master"
 ```
 
 #### 削除

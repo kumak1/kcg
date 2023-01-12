@@ -66,6 +66,10 @@ kcg configure init
 ```shell
 kcg configure set <name> --group="group_a" --group="group_b"
 ```
+or
+```shell
+kcg configure add group <name> "group_c"
+```
 
 When `main` and `master` are mixed in the default branch, setting branch name alias.
 
@@ -73,6 +77,10 @@ example: `main` to `master`
 
 ```shell
 kcg configure set <name> --branch-alias="main:master"
+```
+or
+```shell
+kcg configure add branch-alias <name> "main:master"
 ```
 
 #### `Delete` repository setting.
