@@ -14,14 +14,8 @@
 - [Install](#install)
 - [Getting Started](#getting-started)
     - [Configuration](#configuration)
-        - [For ghq user](#for-ghq-user)
+    - [For ghq user](#for-ghq-user)
 - [Usage](#usage)
-    - [clone](#clone)
-    - [ls](#ls)
-    - [cleanup](#cleanup)
-    - [switch](#switch)
-    - [pull](#pull)
-    - [Command Details](#command-details)
 
 ## Overview
 
@@ -73,66 +67,6 @@ kcg configure init
 kcg configure set <name> --group="group_a" --group="group_b"
 ```
 
-#### `Delete` repository setting.
-
-```shell
-kcg configure delete <name>
-```
-
-#### For ghq user
-
-If you are using [ghq](https://github.com/x-motemen/ghq), you can import repository settings.
-
-```shell
-kcg configure init --import-from-ghq
-```
-
-This command is non-destructive except for `--path` option configuration. recommend rerun when you have more repositories to manage with `ghq`.
-
-## Usage
-
-### clone
-
-Run `git clone` on each repository in configure file.
-
-```shell
-kcg clone
-```
-
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"` 
-
-### ls
-
-Show repository data in configuration file.
-
-```shell
-kcg ls
-```
-
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
-
-### cleanup
-
-Delete merged branch on each repository in configuration file.
-
-```shell
-kcg cleanup
-```
-
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
-
-### switch
-
-Run `git switch` on each repository in configure file.
-
-```shell
-kcg switch <branch_name>
-```
-
-Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
-
-#### Tips
-
 When main and master are mixed in the default branch, setting branch name alias.
 
 example: `main` to `master`
@@ -141,13 +75,40 @@ example: `main` to `master`
 kcg configure set <name> --branch-alias="main:master"
 ```
 
-### pull
-
-Run `git pull` on each repository in configure file.
+#### `Delete` repository setting.
 
 ```shell
-kcg pull
+kcg configure delete <name>
 ```
+
+### For ghq user
+
+#### `Generate` setting file.
+
+If you are using [ghq](https://github.com/x-motemen/ghq), you can import repository settings.
+This command is non-destructive except for `--path` option configuration. recommend rerun when you have more repositories to manage with `ghq`.
+
+```shell
+kcg configure init --import-from-ghq
+```
+
+#### `Add` or `Update` repository setting.
+
+`--path` option is not required.
+
+```shell
+ kcg configure set <name> --repo="git@github.com:kumak1/kcg.git"
+```
+
+## Usage
+
+| command                    | description                                                    |
+|:---------------------------|:---------------------------------------------------------------|
+| `kcg ls`                   | Show repository data in configuration file.                    |
+| `kcg cleanup`              | Delete merged branch on each repository in configuration file. |
+| `kcg clone`                | Run `git clone` on each repository in configure file.          |
+| `kcg switch <branch_name>` | Run `git switch` on each repository in configure file.         |
+| `kcg pull`                 | Run `git pull` on each repository in configure file.           |
 
 Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
 

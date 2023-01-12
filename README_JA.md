@@ -13,15 +13,9 @@
 - [概要](#概要)
 - [インストール](#インストール)
 - [セットアップ](#セットアップ)
-  - [設定ファイル](#設定ファイル)
-    - [ghq利用者の場合](#ghq利用者の場合)
+  - [設定](#設定)
+  - [ghq利用者の場合](#ghq利用者の場合)
 - [基本的な使い方](#基本的な使い方)
-  - [clone](#clone)
-  - [ls](#ls)
-  - [cleanup](#cleanup)
-  - [switch](#switch)
-  - [pull](#pull)
-  - [Command Details](#command-details)
 
 ## 概要
 
@@ -49,7 +43,7 @@ go get github.com/kumak1/kcg@latest
 
 ## セットアップ
 
-### 設定ファイル
+### 設定
 
 デフォルトの設定ファイルは `~/.kcg` に配置します。
 
@@ -75,82 +69,51 @@ kcg configure init
 kcg configure set <name> --group="group_a" --group="group_b"
 ```
 
+管理対象リポジトリの default branch に main と master が混在する場合、
+以下のコマンドで branch 名のエイリアスを設定できます。
+
+例) `main` を指定したら `master` を操作
+
+```shell
+kcg configure set <name> --branch-alias="main:master"
+```
+
 #### 削除
 
 ```shell
 kcg configure delete <name>
 ```
 
-#### ghq利用者の場合
+### ghq利用者の場合
+
+#### 初期化
 
 [ghq](https://github.com/x-motemen/ghq) コマンドを利用している場合、以下のコマンドで ghq で管理しているリポジトリを元に設定ファイルを生成できます。
+このコマンドは `--path` オプションの設定値以外は非破壊的に動作します。`ghq` で管理するリポジトリが増えたらまた実行することをおすすめします。
 
 ```shell
 kcg configure init --import-from-ghq
 ```
 
-このコマンドは `--path` オプションの設定値以外は非破壊的に動作します。`ghq` で管理するリポジトリが増えたらまた実行することをおすすめします。
+#### 追加・更新
+
+`--path` オプションは不要です。
+
+```shell
+ kcg configure set <name> --repo="git@github.com:kumak1/kcg.git"
+```
 
 ## 基本的な使い方
 
-### clone
+| command                    | description                                               |
+|:---------------------------|:----------------------------------------------------------|
+| `kcg ls`                   | リポジトリの状態を一覧表示します。                                         |
+| `kcg cleanup`              | リポジトリの local branch のうち、remote で merge 済みの branch を削除します。 |
+| `kcg clone`                | リポジトリを `git clone` します。                                   |
+| `kcg switch <branch_name>` | リポジトリを `git switch` します。                                  |
+| `kcg pull`                 | リポジトリを `git pull` します。                                    |
 
-設定ファイルに記載されたリポジトリを `git clone` します。
-
-```shell
-kcg clone
-```
-
-`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
-
-### ls
-
-設定ファイルに記載されたリポジトリの状態を一覧します。
-
-```shell
-kcg ls
-```
-
-`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
-
-### cleanup
-
-設定ファイルに記載されたリポジトリの local branch のうち、remote で merge 済みの branch を削除します。
-
-```shell
-kcg cleanup
-```
-
-`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
-
-### switch
-
-設定ファイルに記載されたリポジトリを `git switch` します。
-
-```shell
-kcg switch <branch_name>
-```
-
-`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
-
-#### Tips
-
-リポジトリの default branch に main と master が混在する場合、
-以下のコマンドで branch 名のエイリアス（例: `main` を指定したら `master` を操作 ）を設定できます。
-
-```shell
-kcg configure set <name> --branch-alias="main:master"
-```
-
-### pull
-
-設定ファイルに記載されたリポジトリを `git pull` します。
-
-```shell
-kcg pull
-```
-
-`--filter="needle"` や `--group="group_name"` で対象をリポジトリを絞ることが可能です。
+上記のコマンド全てで `--filter="needle"` や `--group="group_name"` オプションによって対象リポジトリを絞ることが可能です。
 
 ### Command Details
 
