@@ -8,9 +8,6 @@
 
 [日本語ドキュメント (Japanese Documents Available)](README_JA.md)
 
-kumak1 Convenient Git tools.
-inspired by [pdr](https://github.com/pyama86/pdr).
-
 ## Table of Contents
 
 - [Overview](#overview)
