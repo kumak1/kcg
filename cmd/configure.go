@@ -100,6 +100,43 @@ var configureSetCmd = &cobra.Command{
 	},
 }
 
+var configureImportCmd = &cobra.Command{
+	Use:   "import <config_file_path>",
+	Short: "import specified config file into default file",
+	Long:  `import specified config file into default file`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		importFilePath := args[0]
+		if !kcgExec.FileExists(importFilePath) {
+			_, _ = fmt.Fprintf(os.Stderr, "    \x1b[31m%s\x1b[0m %s\n", "not exists", args[0])
+			return
+		}
+
+		viper.SetConfigFile(importFilePath)
+		if err := viper.ReadInConfig(); err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "    \x1b[31m%s\x1b[0m %s\n", "invalid", "cant read config file")
+			return
+		}
+
+		var importConfig kcg.Config
+		if err := viper.Unmarshal(&importConfig); err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "    \x1b[31m%s\x1b[0m %s\n", "invalid", "cant unmarshal config")
+		} else {
+			tempRepos := config.Repos
+			config.Repos = nil
+			initRepo()
+			for index, repo := range tempRepos {
+				config.Repos[index] = repo
+			}
+			for index, repo := range importConfig.Repos {
+				config.Repos[index] = repo
+			}
+			viper.Set("repos", config.Repos)
+			WriteConfig(cfgFile)
+		}
+	},
+}
+
 var configureAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add repository config",
@@ -218,6 +255,8 @@ func init() {
 	configureSetCmd.Flags().StringArray("group", []string{}, "group")
 	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
 	configureSetCmd.Flags().StringArray("update", []string{}, "update command")
+
+	configureCmd.AddCommand(configureImportCmd)
 
 	configureCmd.AddCommand(configureAddCmd)
 	configureAddCmd.AddCommand(configureAddGroupCmd)
