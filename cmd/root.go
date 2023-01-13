@@ -77,6 +77,7 @@ func initConfig() {
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".kcg")
+		cfgFile = home + "/.kcg"
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
