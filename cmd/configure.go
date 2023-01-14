@@ -40,20 +40,6 @@ var configureInitCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
 		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
-
-		if importFromGhq, _ := cmd.Flags().GetBool("import-from-ghq"); importFromGhq {
-			for index, repo := range kcgExec.GhqList() {
-				if _, ok := config.Repos[index]; !ok {
-					config.Repos[index] = &kcg.RepositoryConfig{}
-				}
-				config.Repos[index].Repo = repo
-
-				if path, err := kcgExec.GhqPath(repo); err == nil {
-					config.Repos[index].Path = path
-				}
-			}
-		}
-
 		viper.Set("repos", config.Repos)
 		path, _ := cmd.Flags().GetString("path")
 		WriteConfig(path)
@@ -101,39 +87,47 @@ var configureSetCmd = &cobra.Command{
 }
 
 var configureImportCmd = &cobra.Command{
-	Use:   "import <config_file_path>",
+	Use:   "import",
 	Short: "import specified config file into default file",
 	Long:  `import specified config file into default file`,
-	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		importFilePath := args[0]
-		if !kcgExec.FileExists(importFilePath) {
-			_, _ = fmt.Fprintf(os.Stderr, "    \x1b[31m%s\x1b[0m %s\n", "not exists", args[0])
+		importFilePath, _ := cmd.Flags().GetString("path")
+		useGhq, _ := cmd.Flags().GetBool("ghq")
+
+		if importFilePath == "" && !useGhq {
+			cmd.PrintErrln(cmd.Help())
 			return
 		}
 
-		viper.SetConfigFile(importFilePath)
-		if err := viper.ReadInConfig(); err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "    \x1b[31m%s\x1b[0m %s\n", "invalid", "cant read config file")
-			return
+		initRepo()
+		tempConfig := config
+
+		if importFilePath != "" {
+			if importConfig, err := importConfig(importFilePath); err == nil {
+				for index, repo := range importConfig.Repos {
+					tempConfig.Repos[index] = repo
+				}
+			} else {
+				cmd.PrintErrln(err)
+			}
 		}
 
-		var importConfig kcg.Config
-		if err := viper.Unmarshal(&importConfig); err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "    \x1b[31m%s\x1b[0m %s\n", "invalid", "cant unmarshal config")
-		} else {
-			tempRepos := config.Repos
-			config.Repos = nil
-			initRepo()
-			for index, repo := range tempRepos {
-				config.Repos[index] = repo
+		if useGhq {
+			for index, repo := range kcgExec.GhqList() {
+				if _, ok := tempConfig.Repos[index]; !ok {
+					tempConfig.Repos[index] = &kcg.RepositoryConfig{}
+				}
+				tempConfig.Repos[index].Repo = repo
+
+				if path, err := kcgExec.GhqPath(repo); err == nil {
+					tempConfig.Repos[index].Path = path
+				}
 			}
-			for index, repo := range importConfig.Repos {
-				config.Repos[index] = repo
-			}
-			viper.Set("repos", config.Repos)
-			WriteConfig(cfgFile)
 		}
+
+		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
+		viper.Set("repos", tempConfig.Repos)
+		WriteConfig(cfgFile)
 	},
 }
 
@@ -241,12 +235,30 @@ func WriteConfig(path string) {
 	viper.WriteConfig()
 }
 
+func importConfig(path string) (kcg.Config, error) {
+	var importConfig kcg.Config
+
+	if !kcgExec.FileExists(path) {
+		return importConfig, fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+	}
+
+	viper.SetConfigFile(path)
+	if err := viper.ReadInConfig(); err != nil {
+		return importConfig, fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "invalid", "cant read config file")
+	}
+
+	if err := viper.Unmarshal(&importConfig); err != nil {
+		return importConfig, fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "invalid", "cant unmarshal config")
+	}
+
+	return importConfig, nil
+}
+
 func init() {
 	rootCmd.AddCommand(configureCmd)
 
 	configureCmd.AddCommand(configureInitCmd)
 	configureInitCmd.Flags().String("path", "", "write config file path")
-	configureInitCmd.Flags().Bool("import-from-ghq", false, "create from `ghq list`")
 
 	configureCmd.AddCommand(configureSetCmd)
 	configureSetCmd.Flags().String("repo", "", "remote repository")
@@ -257,6 +269,8 @@ func init() {
 	configureSetCmd.Flags().StringArray("update", []string{}, "update command")
 
 	configureCmd.AddCommand(configureImportCmd)
+	configureImportCmd.Flags().Bool("ghq", false, "Import from 'ghq list'")
+	configureImportCmd.Flags().String("path", "", "configure file path")
 
 	configureCmd.AddCommand(configureAddCmd)
 	configureAddCmd.AddCommand(configureAddGroupCmd)
