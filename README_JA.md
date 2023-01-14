@@ -57,7 +57,7 @@ go get github.com/kumak1/kcg@latest
 | `kcg configure add <name> --branch-alias="main:master"`           | branch 名のエイリアスを追加します<br>例) `main` を指定したら `master` を操作           |
 | `kcg configure delete <name>`                                     | 管理リポジトリを削除します                                                   |
 
-### 設定例
+#### 設定例
 
 ```shell
 kcg configure init
@@ -76,7 +76,7 @@ kcg configure set kumak1/kcg --repo="git@github.com:kumak1/kcg.git" --path="~/sr
 
 上記のコマンド全てで `--filter="needle"` や `--group="group_name"` オプションによって対象リポジトリを絞ることが可能です。
 
-### Command Details
+#### Command Details
 
 ```shell
 % kcg -h

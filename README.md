@@ -57,7 +57,7 @@ default configuration file place is `~/.kcg` .
 | `kcg configure add <name> --branch-alias="main:master"`           | Add branch alias setting. <br> example: `main` to `master`                                               |
 | `kcg configure delete <name>`                                     | Delete repository setting                                                                                |
 
-### Quick Start Example
+#### Quick Start Example
 
 ```shell
 kcg configure init
@@ -76,7 +76,7 @@ kcg configure set kumak1/kcg --repo="git@github.com:kumak1/kcg.git" --path="~/sr
 
 Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
 
-### Command Details
+#### Command Details
 
 ```shell
 % kcg -h
