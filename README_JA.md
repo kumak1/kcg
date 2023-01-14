@@ -44,24 +44,26 @@ go get github.com/kumak1/kcg@latest
 
 デフォルトの設定ファイルは `~/.kcg` に配置します。
 
-| command                                                           | description                                                     |
-|:------------------------------------------------------------------|:----------------------------------------------------------------|
-| `kcg configure init`                                              | 設定ファイルを生成します（既に存在する場合はなにもしない）                                   |
-| `kcg configure import --ghq`                                      | [ghq](https://github.com/x-motemen/ghq) で管理しているリポジトリを元に設定を追加します |
-| `kcg configure import --path="path/to/config"`                    | 設定ファイル( `~/.kcg` ) に指定設定ファイルの設定を取り込みます                          |
-| `kcg configure set <name> --repo="git@github.com:kumak1/kcg.git"` | 管理リポジトリを追加します（必須情報）                                             |
-| `kcg configure set <name> --path="~/src/github.com/kumak1/kcg/"`  | 管理リポジトリの保存場所を設定します（必須情報だが、ghqユーザは指定不要）                          |
-| `kcg configure set <name> --group="group_a"`                      | グループ設定します                                                       | 
-| `kcg configure add <name> --group="group_a"`                      | グループ設定を追加します                                                    | 
-| `kcg configure set <name> --branch-alias="main:master"`           | branch 名のエイリアスを設定します<br>例) `main` を指定したら `master` を操作           |
-| `kcg configure add <name> --branch-alias="main:master"`           | branch 名のエイリアスを追加します<br>例) `main` を指定したら `master` を操作           |
-| `kcg configure delete <name>`                                     | 管理リポジトリを削除します                                                   |
+| command                                                   | description                                                     |
+|:----------------------------------------------------------|:----------------------------------------------------------------|
+| `kcg configure init`                                      | 設定ファイルを生成します（既に存在する場合はなにもしない）                                   |
+| `kcg configure import --ghq`                              | [ghq](https://github.com/x-motemen/ghq) で管理しているリポジトリを元に設定を追加します |
+| `kcg configure import --path="path/to/config"`            | 設定ファイル( `~/.kcg` ) に指定設定ファイルの設定を取り込みます                          |
+| `kcg configure set <name> --repo="git@host:org/repo.git"` | 管理リポジトリを追加します（必須情報）                                             |
+| `kcg configure set <name> --path="path/to/repo"`          | 管理リポジトリの保存場所を設定します（必須情報だが、ghqユーザは指定不要）                          |
+| `kcg configure set <name> --group="group_a"`              | グループ設定します                                                       | 
+| `kcg configure add <name> --group="group_a"`              | グループ設定を追加します                                                    | 
+| `kcg configure set <name> --branch-alias="main:master"`   | branch 名のエイリアスを設定します<br>例) `main` を指定したら `master` を操作           |
+| `kcg configure add <name> --branch-alias="main:master"`   | branch 名のエイリアスを追加します<br>例) `main` を指定したら `master` を操作           |
+| `kcg configure delete <name>`                             | 管理リポジトリを削除します                                                   |
 
 #### 設定例
 
 ```shell
 kcg configure init
-kcg configure set kumak1/kcg --repo="git@github.com:kumak1/kcg.git" --path="~/src/github.com/kumak1/kcg/"
+kcg configure set kumak1/kcg \
+  --repo="git@github.com:kumak1/kcg.git" \
+  --path="~/src/github.com/kumak1/kcg/"
 ```
 
 ## 基本的な使い方

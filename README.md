@@ -44,24 +44,26 @@ go get github.com/kumak1/kcg@latest
 
 default configuration file place is `~/.kcg` .
 
-| command                                                           | description                                                                                              |
-|:------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------|
-| `kcg configure init`                                              | Generate configuration file (if not file exists)                                                         |
-| `kcg configure import --ghq`                                      | Add setting managed by [ghq](https://github.com/x-motemen/ghq)                                           |
-| `kcg configure import --path="path/to/config"`                    | Import settings from specified file into configure file ( `~/.kcg` )                                     |
-| `kcg configure set <name> --repo="git@github.com:kumak1/kcg.git"` | Set repository setting (required)                                                                        |
-| `kcg configure set <name> --path="~/src/github.com/kumak1/kcg/"`  | Set repository save path setting（required. [ghq](https://github.com/x-motemen/ghq) user is not required） |
-| `kcg configure set <name> --group="group_a"`                      | Set group setting                                                                                        | 
-| `kcg configure add <name> --group="group_a"`                      | Add group setting                                                                                        | 
-| `kcg configure set <name> --branch-alias="main:master"`           | Set branch alias setting. <br> example: `main` to `master`                                               |
-| `kcg configure add <name> --branch-alias="main:master"`           | Add branch alias setting. <br> example: `main` to `master`                                               |
-| `kcg configure delete <name>`                                     | Delete repository setting                                                                                |
+| command                                                   | description                                                                                              |
+|:----------------------------------------------------------|:---------------------------------------------------------------------------------------------------------|
+| `kcg configure init`                                      | Generate configuration file (if not file exists)                                                         |
+| `kcg configure import --ghq`                              | Add setting managed by [ghq](https://github.com/x-motemen/ghq)                                           |
+| `kcg configure import --path="path/to/config"`            | Import settings from specified file into configure file ( `~/.kcg` )                                     |
+| `kcg configure set <name> --repo="git@host:org/repo.git"` | Set repository setting (required)                                                                        |
+| `kcg configure set <name> --path="path/to/repo"`          | Set repository save path setting（required. [ghq](https://github.com/x-motemen/ghq) user is not required） |
+| `kcg configure set <name> --group="group_a"`              | Set group setting                                                                                        | 
+| `kcg configure add <name> --group="group_a"`              | Add group setting                                                                                        | 
+| `kcg configure set <name> --branch-alias="main:master"`   | Set branch alias setting. <br> example: `main` to `master`                                               |
+| `kcg configure add <name> --branch-alias="main:master"`   | Add branch alias setting. <br> example: `main` to `master`                                               |
+| `kcg configure delete <name>`                             | Delete repository setting                                                                                |
 
 #### Quick Start Example
 
 ```shell
 kcg configure init
-kcg configure set kumak1/kcg --repo="git@github.com:kumak1/kcg.git" --path="~/src/github.com/kumak1/kcg/"
+kcg configure set kumak1/kcg \
+  --repo="git@github.com:kumak1/kcg.git" \
+  --path="~/src/github.com/kumak1/kcg/"
 ```
 
 ## Usage
