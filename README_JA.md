@@ -13,8 +13,7 @@
 - [概要](#概要)
 - [インストール](#インストール)
 - [セットアップ](#セットアップ)
-  - [設定](#設定)
-  - [ghq利用者の場合](#ghq利用者の場合)
+  - [設定例](#設定例)
 - [基本的な使い方](#基本的な使い方)
 
 ## 概要
@@ -58,7 +57,7 @@ go get github.com/kumak1/kcg@latest
 | `kcg configure add <name> --branch-alias="main:master"`           | branch 名のエイリアスを追加します<br>例) `main` を指定したら `master` を操作           |
 | `kcg configure delete <name>`                                     | 管理リポジトリを削除します                                                   |
 
-### クイックスタート
+### 設定例
 
 ```shell
 kcg configure init

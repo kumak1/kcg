@@ -13,8 +13,7 @@
 - [Overview](#overview)
 - [Install](#install)
 - [Getting Started](#getting-started)
-    - [Configuration](#configuration)
-    - [For ghq user](#for-ghq-user)
+    - [Quick Start Example](#quick-start-example)
 - [Usage](#usage)
 
 ## Overview
@@ -58,7 +57,7 @@ default configuration file place is `~/.kcg` .
 | `kcg configure add <name> --branch-alias="main:master"`           | Add branch alias setting. <br> example: `main` to `master`                                               |
 | `kcg configure delete <name>`                                     | Delete repository setting                                                                                |
 
-### Quick Start
+### Quick Start Example
 
 ```shell
 kcg configure init
