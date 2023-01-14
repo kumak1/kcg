@@ -66,6 +66,12 @@ kcg configure set kumak1/kcg \
   --path="~/src/github.com/kumak1/kcg/"
 ```
 
+[ghq](https://github.com/x-motemen/ghq) ユーザーの場合
+
+```shell
+kcg configure import --ghq
+```
+
 ## 基本的な使い方
 
 | command                    | description                                               |
