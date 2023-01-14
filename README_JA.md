@@ -94,13 +94,13 @@ kcg configure delete <name>
 
 ### ghq利用者の場合
 
-#### 初期化
+#### 取り込み
 
 [ghq](https://github.com/x-motemen/ghq) コマンドを利用している場合、以下のコマンドで ghq で管理しているリポジトリを元に設定ファイルを生成できます。
 このコマンドは `--path` オプションの設定値以外は非破壊的に動作します。`ghq` で管理するリポジトリが増えたらまた実行することをおすすめします。
 
 ```shell
-kcg configure init --import-from-ghq
+kcg configure import --ghq
 ```
 
 #### 追加・更新

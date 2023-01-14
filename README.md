@@ -91,13 +91,13 @@ kcg configure delete <name>
 
 ### For ghq user
 
-#### `Generate` setting file.
+#### `Import` setting file.
 
 If you are using [ghq](https://github.com/x-motemen/ghq), you can import repository settings.
 This command is non-destructive except for `--path` option configuration. recommend rerun when you have more repositories to manage with `ghq`.
 
 ```shell
-kcg configure init --import-from-ghq
+kcg configure import --ghq
 ```
 
 #### `Add` or `Update` repository setting.
