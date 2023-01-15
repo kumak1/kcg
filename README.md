@@ -49,6 +49,7 @@ default configuration file place is `~/.kcg` .
 | `kcg configure init`                                      | Generate configuration file (if not file exists)                                                         |
 | `kcg configure import --ghq`                              | Add setting managed by [ghq](https://github.com/x-motemen/ghq)                                           |
 | `kcg configure import --path="path/to/config"`            | Import settings from specified file into configure file ( `~/.kcg` )                                     |
+| `kcg configure import --url="url/to/config"`              | Import settings from specified url file into configure file ( `~/.kcg` )                                 |
 | `kcg configure set <name> --repo="git@host:org/repo.git"` | Set repository setting (required)                                                                        |
 | `kcg configure set <name> --path="path/to/repo"`          | Set repository save path setting（required. [ghq](https://github.com/x-motemen/ghq) user is not required） |
 | `kcg configure set <name> --group="group_a"`              | Set group setting                                                                                        | 
