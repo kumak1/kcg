@@ -113,15 +113,19 @@ var configureImportCmd = &cobra.Command{
 		}
 
 		if useGhq {
-			for index, repo := range kcgExec.GhqList() {
-				if _, ok := tempConfig.Repos[index]; !ok {
-					tempConfig.Repos[index] = &kcg.RepositoryConfig{}
-				}
-				tempConfig.Repos[index].Repo = repo
+			if ok := kcgExec.IsCommandAvailable("ghq"); ok {
+				for index, repo := range kcgExec.GhqList() {
+					if _, ok := tempConfig.Repos[index]; !ok {
+						tempConfig.Repos[index] = &kcg.RepositoryConfig{}
+					}
+					tempConfig.Repos[index].Repo = repo
 
-				if path, err := kcgExec.GhqPath(repo); err == nil {
-					tempConfig.Repos[index].Path = path
+					if path, err := kcgExec.GhqPath(repo); err == nil {
+						tempConfig.Repos[index].Path = path
+					}
 				}
+			} else {
+				cmd.PrintErrf("    \x1b[31m%s\x1b[0m %s", "invalid", "ghq command is not available")
 			}
 		}
 
