@@ -16,10 +16,13 @@ limitations under the License.
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"github.com/spf13/viper"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -91,10 +94,11 @@ var configureImportCmd = &cobra.Command{
 	Short: "import specified config file into default file",
 	Long:  `import specified config file into default file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		importFilePath, _ := cmd.Flags().GetString("path")
+		importPath, _ := cmd.Flags().GetString("path")
+		importUrl, _ := cmd.Flags().GetString("url")
 		useGhq, _ := cmd.Flags().GetBool("ghq")
 
-		if importFilePath == "" && !useGhq {
+		if importPath == "" && importUrl == "" && !useGhq {
 			cmd.PrintErrln(cmd.Help())
 			return
 		}
@@ -102,8 +106,18 @@ var configureImportCmd = &cobra.Command{
 		initRepo()
 		tempConfig := config
 
-		if importFilePath != "" {
-			if importConfig, err := importConfig(importFilePath); err == nil {
+		if importPath != "" {
+			if importConfig, err := importConfigFile(importPath); err == nil {
+				for index, repo := range importConfig.Repos {
+					tempConfig.Repos[index] = repo
+				}
+			} else {
+				cmd.PrintErrln(err)
+			}
+		}
+
+		if importUrl != "" {
+			if importConfig, err := importConfigUrl(importUrl); err == nil {
 				for index, repo := range importConfig.Repos {
 					tempConfig.Repos[index] = repo
 				}
@@ -239,7 +253,7 @@ func WriteConfig(path string) {
 	viper.WriteConfig()
 }
 
-func importConfig(path string) (kcg.Config, error) {
+func importConfigFile(path string) (kcg.Config, error) {
 	var importConfig kcg.Config
 
 	if !kcgExec.FileExists(path) {
@@ -249,6 +263,28 @@ func importConfig(path string) (kcg.Config, error) {
 	viper.SetConfigFile(path)
 	if err := viper.ReadInConfig(); err != nil {
 		return importConfig, fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "invalid", "cant read config file")
+	}
+
+	if err := viper.Unmarshal(&importConfig); err != nil {
+		return importConfig, fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "invalid", "cant unmarshal config")
+	}
+
+	return importConfig, nil
+}
+
+func importConfigUrl(url string) (kcg.Config, error) {
+	var importConfig kcg.Config
+
+	if res, err := http.Get(url); err == nil {
+		if bodyBytes, err := io.ReadAll(res.Body); err == nil {
+			if err := viper.ReadConfig(bytes.NewBuffer(bodyBytes)); err != nil {
+				return importConfig, err
+			}
+		} else {
+			return importConfig, err
+		}
+	} else {
+		return importConfig, err
 	}
 
 	if err := viper.Unmarshal(&importConfig); err != nil {
@@ -275,6 +311,7 @@ func init() {
 	configureCmd.AddCommand(configureImportCmd)
 	configureImportCmd.Flags().Bool("ghq", false, "Import from 'ghq list'")
 	configureImportCmd.Flags().String("path", "", "configure file path")
+	configureImportCmd.Flags().String("url", "", "configure file url")
 
 	configureCmd.AddCommand(configureAddCmd)
 	configureAddCmd.AddCommand(configureAddGroupCmd)
