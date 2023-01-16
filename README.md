@@ -73,6 +73,20 @@ if you using [ghq](https://github.com/x-motemen/ghq)
 kcg configure import --ghq
 ```
 
+#### Share config file Example
+
+##### sender
+
+```shell
+kcg configure export --filter="kcg" | gh gist create --public
+```
+
+##### receiver
+
+```shell
+kcg configure import --url="gist_raw_file_url"
+```
+
 ## Usage
 
 | command                    | description                                                    |

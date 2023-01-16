@@ -73,6 +73,20 @@ kcg configure set kumak1/kcg \
 kcg configure import --ghq
 ```
 
+#### 設定ファイルの共有例
+
+##### 共有
+
+```shell
+kcg configure export --filter="kcg" | gh gist create --public
+```
+
+##### 受け取り
+
+```shell
+kcg configure import --url="gist_raw_file_url"
+```
+
 ## 基本的な使い方
 
 | command                    | description                                               |
