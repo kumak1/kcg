@@ -30,7 +30,7 @@ func Command(config Config) IGitOperator {
 
 type IGitOperator interface {
 	Cleanup(*RepositoryConfig) ([]byte, error)
-	Clone(*RepositoryConfig) error
+	Clone(*RepositoryConfig) ([]byte, error)
 	CurrentBranch(*RepositoryConfig) string
 	List(string, string) map[string]*RepositoryConfig
 	Path(*RepositoryConfig) (string, bool)
@@ -65,30 +65,26 @@ func cleanup(path string) ([]byte, error) {
 	return cmd.CombinedOutput()
 }
 
-func (g git) Clone(config *RepositoryConfig) error {
+func (g git) Clone(config *RepositoryConfig) ([]byte, error) {
 	if config.Repo == "" {
-		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "error", "repo is empty")
+		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "error", "repo is empty")
 	}
 
 	if path, exists := g.Path(config); exists {
-		return fmt.Errorf("    \x1b[33m%s\x1b[0m %s", "exists", path)
+		return nil, fmt.Errorf("\x1b[33m%s\x1b[0m %s", "exists", path)
 	} else {
 		cmd := exec.Command("git", "clone", config.Repo, path)
-		cmd.Stdout = standardOut
-		cmd.Stderr = standardError
-		return cmd.Run()
+		return cmd.CombinedOutput()
 	}
 }
 
-func (g ghq) Clone(config *RepositoryConfig) error {
+func (g ghq) Clone(config *RepositoryConfig) ([]byte, error) {
 	if config.Repo == "" {
-		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "error", "repo is empty")
+		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "error", "repo is empty")
 	}
 
 	cmd := exec.Command("ghq", "get", config.Repo)
-	cmd.Stdout = standardOut
-	cmd.Stderr = standardError
-	return cmd.Run()
+	return cmd.CombinedOutput()
 }
 
 func (g git) CurrentBranch(config *RepositoryConfig) string {

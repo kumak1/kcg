@@ -16,9 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/viper"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -33,12 +33,27 @@ var cloneCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
+		var wg sync.WaitGroup
+
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("\x1b[32m%s\x1b[0m %s\n", "on", index)
-			if err := kcgCmd.Clone(repo); err != nil {
-				fmt.Println(err)
-			}
+			wg.Add(1)
+			index := index
+			repo := repo
+			go func() {
+				output, err := kcgCmd.Clone(repo)
+				if err == nil {
+					cmd.Printf(validMessageFormat, "✔", index)
+					cmd.Print(string(output))
+				} else {
+					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Print(string(output))
+					cmd.Println(err)
+				}
+				wg.Done()
+			}()
 		}
+
+		wg.Wait()
 
 		if config.Ghq {
 			for index, repo := range kcgCmd.List("", "") {
