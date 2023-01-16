@@ -3,17 +3,12 @@ package kcg
 import (
 	"fmt"
 	kcgExec "github.com/kumak1/kcg/kcg/exec"
-	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 )
 
-var (
-	repositoryConfig map[string]*RepositoryConfig
-	standardOut      = os.Stdout
-	standardError    = os.Stderr
-)
+var repositoryConfig map[string]*RepositoryConfig
 
 func Command(config Config) IGitOperator {
 	repositoryConfig = config.Repos
