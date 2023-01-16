@@ -24,10 +24,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-var version string
-var cfgFile string
+var (
+	version string
+	cfgFile string
+	config  kcg.Config
+)
 
-var config kcg.Config
+const (
+	validMessageFormat   = "\x1b[32m%s\x1b[0m %s\n"
+	invalidMessageFormat = "\x1b[31m%s\x1b[0m %s\n"
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

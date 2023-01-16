@@ -41,13 +41,13 @@ var pullCmd = &cobra.Command{
 				output, err := kcgCmd.Pull(repo)
 
 				if err == nil {
-					cmd.Printf("\x1b[32m%s\x1b[0m %s\n", "✔", index)
+					cmd.Printf(validMessageFormat, "✔", index)
 					message := string(output)
 					if message != "Already up to date.\n" {
 						cmd.Print(message)
 					}
 				} else {
-					cmd.Printf("\x1b[31m%s\x1b[0m %s\n", "X", index)
+					cmd.Printf(invalidMessageFormat, "X", index)
 					cmd.Print(string(output))
 					cmd.Println(err)
 				}
