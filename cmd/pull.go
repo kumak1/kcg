@@ -16,9 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
+	"sync"
 )
 
 // pullCmd represents the pull command
@@ -31,12 +31,30 @@ var pullCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
+		var wg sync.WaitGroup
+
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("\x1b[32m%s\x1b[0m %s\n", "on", index)
-			if err := kcgCmd.Pull(repo); err != nil {
-				fmt.Println(err)
-			}
+			wg.Add(1)
+			repo := repo
+			index := index
+			go func() {
+				output, err := kcgCmd.Pull(repo)
+
+				if err == nil {
+					cmd.Printf("\x1b[32m%s\x1b[0m %s\n", "✔", index)
+					message := string(output)
+					if message != "Already up to date.\n" {
+						cmd.Print(message)
+					}
+				} else {
+					cmd.Printf("\x1b[31m%s\x1b[0m %s\n", "X", index)
+					cmd.Print(string(output))
+					cmd.Println(err)
+				}
+				wg.Done()
+			}()
 		}
+		wg.Wait()
 	},
 }
 
