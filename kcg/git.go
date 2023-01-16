@@ -35,7 +35,7 @@ type IGitOperator interface {
 	List(string, string) map[string]*RepositoryConfig
 	Path(*RepositoryConfig) (string, bool)
 	Pull(*RepositoryConfig) ([]byte, error)
-	Run(*RepositoryConfig, string) error
+	Run(*RepositoryConfig, string) (string, error)
 	Switch(*RepositoryConfig, string) ([]byte, error)
 }
 
@@ -159,28 +159,27 @@ func pull(path string) ([]byte, error) {
 	return cmd.CombinedOutput()
 }
 
-func (g git) Run(config *RepositoryConfig, command string) error {
+func (g git) Run(config *RepositoryConfig, command string) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return run(path, command)
 	} else {
-		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+		return "", fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
 	}
 }
 
-func (g ghq) Run(config *RepositoryConfig, command string) error {
+func (g ghq) Run(config *RepositoryConfig, command string) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return run(path, command)
 	} else {
-		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+		return "", fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
 	}
 }
 
-func run(path string, command string) error {
+func run(path string, command string) (string, error) {
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Dir = path
-	cmd.Stdout = standardOut
-	cmd.Stderr = standardError
-	return cmd.Run()
+	out, err := cmd.CombinedOutput()
+	return strings.TrimRight(string(out), "\n"), err
 }
 
 func (g git) Switch(config *RepositoryConfig, branch string) ([]byte, error) {
