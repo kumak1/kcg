@@ -44,9 +44,16 @@ var execSetupCmd = &cobra.Command{
 			for _, command := range repo.Setup {
 				output, err := kcgCmd.Run(repo, command)
 				if err == nil {
-					resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command) + output
+					resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
+					if output != "" {
+						resultOutput += output + "\n"
+					}
 				} else {
-					resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command) + output + err.Error()
+					resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
+					if output != "" {
+						resultOutput += output + "\n"
+					}
+					resultOutput += err.Error() + "\n"
 					resultError = true
 					break
 				}
