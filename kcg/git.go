@@ -9,7 +9,16 @@ import (
 	"strings"
 )
 
-var repositoryConfig map[string]*RepositoryConfig
+var (
+	repositoryConfig map[string]*RepositoryConfig
+	standardOut      = os.Stdout
+	standardError    = os.Stderr
+)
+
+func SetStdio(stdOut *os.File, stdErr *os.File) {
+	standardOut = stdOut
+	standardError = stdErr
+}
 
 func Command(config Config) IGitOperator {
 	repositoryConfig = config.Repos
@@ -58,8 +67,8 @@ func (g ghq) Cleanup(config *RepositoryConfig) error {
 func cleanup(path string) error {
 	cmd := exec.Command("sh", "-c", "git branch --merged|egrep -v '\\*|develop|main|master'|xargs git branch -d")
 	cmd.Dir = path
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = standardOut
+	cmd.Stderr = standardError
 	return cmd.Run()
 }
 
@@ -72,8 +81,8 @@ func (g git) Clone(config *RepositoryConfig) error {
 		return fmt.Errorf("    \x1b[33m%s\x1b[0m %s", "exists", path)
 	} else {
 		cmd := exec.Command("git", "clone", config.Repo, path)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		cmd.Stdout = standardOut
+		cmd.Stderr = standardError
 		return cmd.Run()
 	}
 }
@@ -84,8 +93,8 @@ func (g ghq) Clone(config *RepositoryConfig) error {
 	}
 
 	cmd := exec.Command("ghq", "get", config.Repo)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = standardOut
+	cmd.Stderr = standardError
 	return cmd.Run()
 }
 
@@ -155,8 +164,8 @@ func (g ghq) Pull(config *RepositoryConfig) error {
 func pull(path string) error {
 	cmd := exec.Command("git", "pull")
 	cmd.Dir = path
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = standardOut
+	cmd.Stderr = standardError
 	return cmd.Run()
 }
 
@@ -179,8 +188,8 @@ func (g ghq) Run(config *RepositoryConfig, command string) error {
 func run(path string, command string) error {
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Dir = path
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = standardOut
+	cmd.Stderr = standardError
 	return cmd.Run()
 }
 
@@ -207,8 +216,8 @@ func switchBranch(path string, branch string) error {
 
 	cmd := exec.Command("git", "switch", branch)
 	cmd.Dir = path
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = standardOut
+	cmd.Stderr = standardError
 	return cmd.Run()
 }
 
