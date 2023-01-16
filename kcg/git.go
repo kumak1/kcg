@@ -140,6 +140,9 @@ func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 	if config.Path != "" {
 		return config.Path, kcgExec.FileExists(config.Path)
 	} else {
+		if config.Repo == "" {
+			return "", false
+		}
 		path, _ := kcgExec.GhqPath(config.Repo)
 		return path, path != "" && kcgExec.FileExists(path)
 	}
