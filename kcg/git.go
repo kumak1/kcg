@@ -38,11 +38,13 @@ type git struct{}
 
 type ghq struct{}
 
+const errorMessageFormat = "\x1b[31m%s\x1b[0m %s"
+
 func (g git) Cleanup(config *RepositoryConfig) ([]byte, error) {
 	if path, exists := g.Path(config); exists {
 		return cleanup(path)
 	} else {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
+		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
@@ -50,7 +52,7 @@ func (g ghq) Cleanup(config *RepositoryConfig) ([]byte, error) {
 	if path, exists := g.Path(config); exists {
 		return cleanup(path)
 	} else {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
+		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
@@ -62,7 +64,7 @@ func cleanup(path string) ([]byte, error) {
 
 func (g git) Clone(config *RepositoryConfig) ([]byte, error) {
 	if config.Repo == "" {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "error", "repo is empty")
+		return nil, fmt.Errorf(errorMessageFormat, "error", "repo is empty")
 	}
 
 	if path, exists := g.Path(config); exists {
@@ -75,7 +77,7 @@ func (g git) Clone(config *RepositoryConfig) ([]byte, error) {
 
 func (g ghq) Clone(config *RepositoryConfig) ([]byte, error) {
 	if config.Repo == "" {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "error", "repo is empty")
+		return nil, fmt.Errorf(errorMessageFormat, "error", "repo is empty")
 	}
 
 	cmd := exec.Command("ghq", "get", config.Repo)
@@ -136,7 +138,7 @@ func (g git) Pull(config *RepositoryConfig) ([]byte, error) {
 	if path, exists := g.Path(config); exists {
 		return pull(path)
 	} else {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
+		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
@@ -144,7 +146,7 @@ func (g ghq) Pull(config *RepositoryConfig) ([]byte, error) {
 	if path, exists := g.Path(config); exists {
 		return pull(path)
 	} else {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
+		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
@@ -158,7 +160,7 @@ func (g git) Run(config *RepositoryConfig, command string) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return run(path, command)
 	} else {
-		return "", fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
+		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
@@ -166,7 +168,7 @@ func (g ghq) Run(config *RepositoryConfig, command string) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return run(path, command)
 	} else {
-		return "", fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
+		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
@@ -181,7 +183,7 @@ func (g git) Switch(config *RepositoryConfig, branch string) ([]byte, error) {
 	if path, exists := g.Path(config); exists {
 		return switchBranch(path, convertedBranch(config.Alias, branch))
 	} else {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
+		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
@@ -189,13 +191,13 @@ func (g ghq) Switch(config *RepositoryConfig, branch string) ([]byte, error) {
 	if path, exists := g.Path(config); exists {
 		return switchBranch(path, convertedBranch(config.Alias, branch))
 	} else {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
+		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
 func switchBranch(path string, branch string) ([]byte, error) {
 	if !kcgExec.BranchExists(path, branch) {
-		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid branch", branch)
+		return nil, fmt.Errorf(errorMessageFormat, "invalid branch", branch)
 	}
 
 	cmd := exec.Command("git", "switch", branch)
