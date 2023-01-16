@@ -15,11 +15,6 @@ var (
 	standardError    = os.Stderr
 )
 
-func SetStdio(stdOut *os.File, stdErr *os.File) {
-	standardOut = stdOut
-	standardError = stdErr
-}
-
 func Command(config Config) IGitOperator {
 	repositoryConfig = config.Repos
 
