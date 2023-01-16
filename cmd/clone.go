@@ -43,11 +43,10 @@ var cloneCmd = &cobra.Command{
 				output, err := kcgCmd.Clone(repo)
 				if err == nil {
 					cmd.Printf(validMessageFormat, "✔", index)
-					cmd.Print(string(output))
+					cmd.Print(output)
 				} else {
 					cmd.Printf(invalidMessageFormat, "X", index)
-					cmd.Print(string(output))
-					cmd.Println(err)
+					cmd.Print(output + err.Error())
 				}
 				wg.Done()
 			}()

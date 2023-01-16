@@ -59,7 +59,7 @@ var execSetupCmd = &cobra.Command{
 			}
 
 			if resultOutput != "" {
-				cmd.Println(resultOutput)
+				cmd.Print(resultOutput)
 			}
 		}
 	},
@@ -95,7 +95,7 @@ var execUpdateCmd = &cobra.Command{
 			}
 
 			if resultOutput != "" {
-				cmd.Println(resultOutput)
+				cmd.Print(resultOutput)
 			}
 		}
 	},

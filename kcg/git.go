@@ -24,64 +24,74 @@ func Command(config Config) IGitOperator {
 }
 
 type IGitOperator interface {
-	Cleanup(*RepositoryConfig) ([]byte, error)
-	Clone(*RepositoryConfig) ([]byte, error)
+	Cleanup(*RepositoryConfig) (string, error)
+	Clone(*RepositoryConfig) (string, error)
 	CurrentBranch(*RepositoryConfig) string
 	List(string, string) map[string]*RepositoryConfig
 	Path(*RepositoryConfig) (string, bool)
-	Pull(*RepositoryConfig) ([]byte, error)
+	Pull(*RepositoryConfig) (string, error)
 	Run(*RepositoryConfig, string) (string, error)
-	Switch(*RepositoryConfig, string) ([]byte, error)
+	Switch(*RepositoryConfig, string) (string, error)
 }
 
 type git struct{}
 
 type ghq struct{}
 
-const errorMessageFormat = "\x1b[31m%s\x1b[0m %s"
+const (
+	errorMessageFormat = "  \x1b[31m%s\x1b[0m %s\n"
+	warnMessageFormat  = "  \x1b[33m%s\x1b[0m %s\n"
+)
 
-func (g git) Cleanup(config *RepositoryConfig) ([]byte, error) {
+func (g git) Cleanup(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return cleanup(path)
 	} else {
-		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
+		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
-func (g ghq) Cleanup(config *RepositoryConfig) ([]byte, error) {
+func (g ghq) Cleanup(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return cleanup(path)
 	} else {
-		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
+		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
-func cleanup(path string) ([]byte, error) {
+func cleanup(path string) (string, error) {
 	cmd := exec.Command("sh", "-c", "git branch --merged|egrep -v '\\*|develop|main|master'|xargs git branch -d")
 	cmd.Dir = path
-	return cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
+	return strings.TrimRight(string(out), "\n"), err
 }
 
-func (g git) Clone(config *RepositoryConfig) ([]byte, error) {
+func (g git) Clone(config *RepositoryConfig) (string, error) {
 	if config.Repo == "" {
-		return nil, fmt.Errorf(errorMessageFormat, "error", "repo is empty")
+		return "", fmt.Errorf(errorMessageFormat, "error", "repo is empty")
 	}
 
 	if path, exists := g.Path(config); exists {
-		return nil, fmt.Errorf("\x1b[33m%s\x1b[0m %s", "exists", path)
+		return fmt.Sprintf(warnMessageFormat, "exists", path), nil
 	} else {
 		cmd := exec.Command("git", "clone", config.Repo, path)
-		return cmd.CombinedOutput()
+		out, err := cmd.CombinedOutput()
+		return strings.TrimRight(string(out), "\n"), err
 	}
 }
 
-func (g ghq) Clone(config *RepositoryConfig) ([]byte, error) {
+func (g ghq) Clone(config *RepositoryConfig) (string, error) {
 	if config.Repo == "" {
-		return nil, fmt.Errorf(errorMessageFormat, "error", "repo is empty")
+		return "", fmt.Errorf(errorMessageFormat, "error", "repo is empty")
 	}
 
-	cmd := exec.Command("ghq", "get", config.Repo)
-	return cmd.CombinedOutput()
+	if path, exists := g.Path(config); exists {
+		return fmt.Sprintf(warnMessageFormat, "exists", path), nil
+	} else {
+		cmd := exec.Command("ghq", "get", config.Repo)
+		out, err := cmd.CombinedOutput()
+		return strings.TrimRight(string(out), "\n"), err
+	}
 }
 
 func (g git) CurrentBranch(config *RepositoryConfig) string {
@@ -134,26 +144,27 @@ func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 	}
 }
 
-func (g git) Pull(config *RepositoryConfig) ([]byte, error) {
+func (g git) Pull(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return pull(path)
 	} else {
-		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
+		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
-func (g ghq) Pull(config *RepositoryConfig) ([]byte, error) {
+func (g ghq) Pull(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return pull(path)
 	} else {
-		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
+		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
-func pull(path string) ([]byte, error) {
+func pull(path string) (string, error) {
 	cmd := exec.Command("git", "pull")
 	cmd.Dir = path
-	return cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
+	return strings.TrimRight(string(out), "\n"), err
 }
 
 func (g git) Run(config *RepositoryConfig, command string) (string, error) {
@@ -179,30 +190,31 @@ func run(path string, command string) (string, error) {
 	return strings.TrimRight(string(out), "\n"), err
 }
 
-func (g git) Switch(config *RepositoryConfig, branch string) ([]byte, error) {
+func (g git) Switch(config *RepositoryConfig, branch string) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return switchBranch(path, convertedBranch(config.Alias, branch))
 	} else {
-		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
+		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
-func (g ghq) Switch(config *RepositoryConfig, branch string) ([]byte, error) {
+func (g ghq) Switch(config *RepositoryConfig, branch string) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return switchBranch(path, convertedBranch(config.Alias, branch))
 	} else {
-		return nil, fmt.Errorf(errorMessageFormat, "invalid path", path)
+		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
 }
 
-func switchBranch(path string, branch string) ([]byte, error) {
+func switchBranch(path string, branch string) (string, error) {
 	if !kcgExec.BranchExists(path, branch) {
-		return nil, fmt.Errorf(errorMessageFormat, "invalid branch", branch)
+		return "", fmt.Errorf(errorMessageFormat, "invalid branch", branch)
 	}
 
 	cmd := exec.Command("git", "switch", branch)
 	cmd.Dir = path
-	return cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
+	return strings.TrimRight(string(out), "\n"), err
 }
 
 func convertedBranch(branchArias []string, branch string) string {
