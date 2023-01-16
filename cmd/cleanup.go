@@ -16,9 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
+	"sync"
 )
 
 // cleanupCmd represents the cleanup command
@@ -31,12 +31,26 @@ var cleanupCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
+		var wg sync.WaitGroup
+
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("\x1b[32m%s\x1b[0m %s\n", "on", index)
-			if err := kcgCmd.Cleanup(repo); err != nil {
-				fmt.Println(err)
-			}
+			wg.Add(1)
+			index := index
+			repo := repo
+			go func() {
+				output, err := kcgCmd.Cleanup(repo)
+				if err == nil {
+					cmd.Printf(validMessageFormat, "✔", index)
+					cmd.Print(output)
+				} else {
+					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Print(output + err.Error())
+				}
+				wg.Done()
+			}()
 		}
+
+		wg.Wait()
 	},
 }
 

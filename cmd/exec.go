@@ -38,17 +38,28 @@ var execSetupCmd = &cobra.Command{
 		kcgCmd := kcg.Command(config)
 
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("\x1b[32m%s\x1b[0m %s\n", "on", index)
-			if len(repo.Setup) == 0 {
-				fmt.Printf("    \x1b[33m%s\x1b[0m %s\n", "not exists", "setup command")
-				continue
-			}
+			resultOutput := ""
+			resultError := false
 
 			for _, command := range repo.Setup {
-				fmt.Printf("    \x1b[32m%s\x1b[0m %s\n", "run", command)
-				if err := kcgCmd.Run(repo, command); err != nil {
-					fmt.Println(err)
+				output, err := kcgCmd.Run(repo, command)
+				if err == nil {
+					resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command) + output
+				} else {
+					resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command) + output + err.Error()
+					resultError = true
+					break
 				}
+			}
+
+			if resultError {
+				cmd.Printf(invalidMessageFormat, "X", index)
+			} else {
+				cmd.Printf(validMessageFormat, "✔", index)
+			}
+
+			if resultOutput != "" {
+				cmd.Print(resultOutput)
 			}
 		}
 	},
@@ -64,17 +75,27 @@ var execUpdateCmd = &cobra.Command{
 		kcgCmd := kcg.Command(config)
 
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("\x1b[32m%s\x1b[0m %s\n", "on", index)
-			if len(repo.Update) == 0 {
-				fmt.Printf("    \x1b[33m%s\x1b[0m %s\n", "not exists", "setup command")
-				continue
+			resultOutput := ""
+			resultError := false
+			for _, command := range repo.Update {
+				output, err := kcgCmd.Run(repo, command)
+				if err == nil {
+					resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command) + output
+				} else {
+					resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command) + output + err.Error()
+					resultError = true
+					break
+				}
 			}
 
-			for _, command := range repo.Update {
-				fmt.Printf("    \x1b[32m%s\x1b[0m %s\n", "run", command)
-				if err := kcgCmd.Run(repo, command); err != nil {
-					fmt.Println(err)
-				}
+			if resultError {
+				cmd.Printf(invalidMessageFormat, "X", index)
+			} else {
+				cmd.Printf(validMessageFormat, "✔", index)
+			}
+
+			if resultOutput != "" {
+				cmd.Print(resultOutput)
 			}
 		}
 	},

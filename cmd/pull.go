@@ -42,14 +42,17 @@ var pullCmd = &cobra.Command{
 
 				if err == nil {
 					cmd.Printf(validMessageFormat, "✔", index)
-					message := string(output)
-					if message != "Already up to date.\n" {
-						cmd.Print(message)
+					if output != "Already up to date." {
+						cmd.Print(output)
 					}
 				} else {
 					cmd.Printf(invalidMessageFormat, "X", index)
-					cmd.Print(string(output))
-					cmd.Println(err)
+					if output != "" {
+						cmd.Println(output)
+						cmd.Println(err.Error())
+					} else {
+						cmd.Print(err.Error())
+					}
 				}
 				wg.Done()
 			}()
