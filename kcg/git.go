@@ -29,7 +29,7 @@ func Command(config Config) IGitOperator {
 }
 
 type IGitOperator interface {
-	Cleanup(*RepositoryConfig) error
+	Cleanup(*RepositoryConfig) ([]byte, error)
 	Clone(*RepositoryConfig) error
 	CurrentBranch(*RepositoryConfig) string
 	List(string, string) map[string]*RepositoryConfig
@@ -43,28 +43,26 @@ type git struct{}
 
 type ghq struct{}
 
-func (g git) Cleanup(config *RepositoryConfig) error {
+func (g git) Cleanup(config *RepositoryConfig) ([]byte, error) {
 	if path, exists := g.Path(config); exists {
 		return cleanup(path)
 	} else {
-		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
 	}
 }
 
-func (g ghq) Cleanup(config *RepositoryConfig) error {
+func (g ghq) Cleanup(config *RepositoryConfig) ([]byte, error) {
 	if path, exists := g.Path(config); exists {
 		return cleanup(path)
 	} else {
-		return fmt.Errorf("    \x1b[31m%s\x1b[0m %s", "not exists", path)
+		return nil, fmt.Errorf("\x1b[31m%s\x1b[0m %s", "invalid path", path)
 	}
 }
 
-func cleanup(path string) error {
+func cleanup(path string) ([]byte, error) {
 	cmd := exec.Command("sh", "-c", "git branch --merged|egrep -v '\\*|develop|main|master'|xargs git branch -d")
 	cmd.Dir = path
-	cmd.Stdout = standardOut
-	cmd.Stderr = standardError
-	return cmd.Run()
+	return cmd.CombinedOutput()
 }
 
 func (g git) Clone(config *RepositoryConfig) error {
