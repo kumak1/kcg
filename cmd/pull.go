@@ -43,7 +43,7 @@ var pullCmd = &cobra.Command{
 				if err == nil {
 					cmd.Printf(validMessageFormat, "✔", index)
 					if output != "Already up to date." {
-						cmd.Print(output)
+						cmd.Println(output)
 					}
 				} else {
 					cmd.Printf(invalidMessageFormat, "X", index)

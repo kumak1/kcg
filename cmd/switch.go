@@ -51,7 +51,7 @@ var switchCmd = &cobra.Command{
 				if err == nil {
 					cmd.Printf(validMessageFormat, "✔", index)
 					if !strings.Contains(output, "Already on") {
-						cmd.Print(output)
+						cmd.Println(output)
 					}
 				} else {
 					cmd.Printf(invalidMessageFormat, "X", index)
