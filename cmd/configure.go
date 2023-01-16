@@ -21,6 +21,7 @@ import (
 	"github.com/kumak1/kcg/kcg"
 	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 	"io"
 	"net/http"
 	"os"
@@ -146,6 +147,25 @@ var configureImportCmd = &cobra.Command{
 		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
 		viper.Set("repos", tempConfig.Repos)
 		WriteConfig(cfgFile)
+	},
+}
+
+var configureExportCmd = &cobra.Command{
+	Use:   "export",
+	Short: "export config",
+	Long:  `export config`,
+	Run: func(cmd *cobra.Command, args []string) {
+		groupFlag, _ := cmd.Flags().GetString("group")
+		filterFlag, _ := cmd.Flags().GetString("filter")
+
+		viper.Reset()
+		viper.Set("repos", kcg.Command(config).List(groupFlag, filterFlag))
+
+		if bs, err := yaml.Marshal(viper.AllSettings()); err == nil {
+			fmt.Print(string(bs))
+		} else {
+			cmd.PrintErrf("    \x1b[31m%s\x1b[0m %s", "invalid", err)
+		}
 	},
 }
 
@@ -312,6 +332,9 @@ func init() {
 	configureImportCmd.Flags().Bool("ghq", false, "Import from 'ghq list'")
 	configureImportCmd.Flags().String("path", "", "configure file path")
 	configureImportCmd.Flags().String("url", "", "configure file url")
+
+	configureCmd.AddCommand(configureExportCmd)
+	assignSearchFlags(configureExportCmd)
 
 	configureCmd.AddCommand(configureAddCmd)
 	configureAddCmd.AddCommand(configureAddGroupCmd)
