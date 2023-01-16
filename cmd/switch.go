@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
+	"strings"
+	"sync"
 )
 
 // switchCmd represents the switch command
@@ -38,12 +40,30 @@ var switchCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
+		var wg sync.WaitGroup
+
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			fmt.Printf("\x1b[32m%s\x1b[0m %s\n", "on", index)
-			if err := kcgCmd.Switch(repo, args[0]); err != nil {
-				fmt.Println(err)
-			}
+			wg.Add(1)
+			index := index
+			repo := repo
+			go func() {
+				output, err := kcgCmd.Switch(repo, args[0])
+				if err == nil {
+					cmd.Printf("\x1b[32m%s\x1b[0m %s\n", "✔", index)
+					message := string(output)
+					if !strings.Contains(message, "Already on") {
+						cmd.Print(message)
+					}
+				} else {
+					cmd.Printf("\x1b[31m%s\x1b[0m %s\n", "X", index)
+					cmd.Print(string(output))
+					cmd.Println(err)
+				}
+				wg.Done()
+			}()
 		}
+
+		wg.Wait()
 	},
 }
 
