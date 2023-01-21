@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
+	"sync"
 )
 
 var execCmd = &cobra.Command{
@@ -37,38 +38,48 @@ var execSetupCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
+		var wg sync.WaitGroup
+
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			resultOutput := ""
-			resultError := false
+			wg.Add(1)
+			index := index
+			repo := repo
+			go func() {
+				resultOutput := ""
+				resultError := false
 
-			for _, command := range repo.Setup {
-				output, err := kcgCmd.Run(repo, command)
-				if err == nil {
-					resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
-					if output != "" {
-						resultOutput += output + "\n"
+				for _, command := range repo.Setup {
+					output, err := kcgCmd.Run(repo, command)
+					if err == nil {
+						resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
+						if output != "" {
+							resultOutput += output + "\n"
+						}
+					} else {
+						resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
+						if output != "" {
+							resultOutput += output + "\n"
+						}
+						resultOutput += err.Error() + "\n"
+						resultError = true
+						break
 					}
-				} else {
-					resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
-					if output != "" {
-						resultOutput += output + "\n"
-					}
-					resultOutput += err.Error() + "\n"
-					resultError = true
-					break
 				}
-			}
 
-			if resultError {
-				cmd.Printf(invalidMessageFormat, "X", index)
-			} else {
-				cmd.Printf(validMessageFormat, "✔", index)
-			}
+				if resultError {
+					cmd.Printf(invalidMessageFormat, "X", index)
+				} else {
+					cmd.Printf(validMessageFormat, "✔", index)
+				}
 
-			if resultOutput != "" {
-				cmd.Print(resultOutput)
-			}
+				if resultOutput != "" {
+					cmd.Print(resultOutput)
+				}
+				wg.Done()
+			}()
 		}
+
+		wg.Wait()
 	},
 }
 
@@ -81,37 +92,48 @@ var execUpdateCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		kcgCmd := kcg.Command(config)
 
+		var wg sync.WaitGroup
+
 		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
-			resultOutput := ""
-			resultError := false
-			for _, command := range repo.Update {
-				output, err := kcgCmd.Run(repo, command)
-				if err == nil {
-					resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
-					if output != "" {
-						resultOutput += output + "\n"
+			wg.Add(1)
+			index := index
+			repo := repo
+
+			go func() {
+				resultOutput := ""
+				resultError := false
+				for _, command := range repo.Update {
+					output, err := kcgCmd.Run(repo, command)
+					if err == nil {
+						resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
+						if output != "" {
+							resultOutput += output + "\n"
+						}
+					} else {
+						resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
+						if output != "" {
+							resultOutput += output + "\n"
+						}
+						resultOutput += err.Error() + "\n"
+						resultError = true
+						break
 					}
-				} else {
-					resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
-					if output != "" {
-						resultOutput += output + "\n"
-					}
-					resultOutput += err.Error() + "\n"
-					resultError = true
-					break
 				}
-			}
 
-			if resultError {
-				cmd.Printf(invalidMessageFormat, "X", index)
-			} else {
-				cmd.Printf(validMessageFormat, "✔", index)
-			}
+				if resultError {
+					cmd.Printf(invalidMessageFormat, "X", index)
+				} else {
+					cmd.Printf(validMessageFormat, "✔", index)
+				}
 
-			if resultOutput != "" {
-				cmd.Print(resultOutput)
-			}
+				if resultOutput != "" {
+					cmd.Print(resultOutput)
+				}
+				wg.Done()
+			}()
 		}
+
+		wg.Wait()
 	},
 }
 
