@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
+	"os"
 	"sync"
 )
 
@@ -49,7 +50,8 @@ var execSetupCmd = &cobra.Command{
 				resultError := false
 
 				for _, command := range repo.Setup {
-					output, err := kcgCmd.Run(repo, command)
+					expandEnvCommand := os.ExpandEnv(command)
+					output, err := kcgCmd.Run(repo, expandEnvCommand)
 					if err == nil {
 						resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
 						if output != "" {
@@ -103,7 +105,8 @@ var execUpdateCmd = &cobra.Command{
 				resultOutput := ""
 				resultError := false
 				for _, command := range repo.Update {
-					output, err := kcgCmd.Run(repo, command)
+					expandEnvCommand := os.ExpandEnv(command)
+					output, err := kcgCmd.Run(repo, expandEnvCommand)
 					if err == nil {
 						resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
 						if output != "" {
