@@ -5,6 +5,7 @@
 ![build](https://img.shields.io/github/actions/workflow/status/kumak1/kcg/release.yml)
 ![Go version](https://img.shields.io/github/go-mod/go-version/kumak1/kcg)
 ![release](https://img.shields.io/github/v/release/kumak1/kcg)
+[![Coverage Status](https://coveralls.io/repos/github/kumak1/kcg/badge.svg)](https://coveralls.io/github/kumak1/kcg)
 
 [English Documents Available(英語ドキュメント)](README.md)
 
