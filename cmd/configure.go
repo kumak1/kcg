@@ -18,9 +18,9 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"github.com/kumak1/kcg/ghq"
+	kcgExec "github.com/kumak1/kcg/exec"
+	"github.com/kumak1/kcg/exec/ghq"
 	"github.com/kumak1/kcg/kcg"
-	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 	"io"

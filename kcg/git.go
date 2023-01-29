@@ -2,10 +2,9 @@ package kcg
 
 import (
 	"fmt"
-	kcgGhq "github.com/kumak1/kcg/ghq"
-	kcgGit "github.com/kumak1/kcg/git"
-	kcgExec "github.com/kumak1/kcg/kcg/exec"
-	"os/exec"
+	kcgExec "github.com/kumak1/kcg/exec"
+	kcgGhq "github.com/kumak1/kcg/exec/ghq"
+	kcgGit "github.com/kumak1/kcg/exec/git"
 	"regexp"
 	"strings"
 )
@@ -171,10 +170,7 @@ func (g ghq) Run(config *RepositoryConfig, command string) (string, error) {
 }
 
 func run(path string, command string) (string, error) {
-	cmd := exec.Command("sh", "-c", command)
-	cmd.Dir = path
-	out, err := cmd.CombinedOutput()
-	return strings.TrimRight(string(out), "\n"), err
+	return kcgExec.Output(path, "sh", "-c", command)
 }
 
 func (g git) Switch(config *RepositoryConfig, branch string) (string, error) {
