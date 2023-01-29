@@ -155,7 +155,7 @@ func (g ghq) Pull(config *RepositoryConfig) (string, error) {
 
 func (g git) Run(config *RepositoryConfig, command string) (string, error) {
 	if path, exists := g.Path(config); exists {
-		return run(path, command)
+		return kcgExec.Output(path, "sh", "-c", command)
 	} else {
 		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
@@ -163,14 +163,10 @@ func (g git) Run(config *RepositoryConfig, command string) (string, error) {
 
 func (g ghq) Run(config *RepositoryConfig, command string) (string, error) {
 	if path, exists := g.Path(config); exists {
-		return run(path, command)
+		return kcgExec.Output(path, "sh", "-c", command)
 	} else {
 		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
-}
-
-func run(path string, command string) (string, error) {
-	return kcgExec.Output(path, "sh", "-c", command)
 }
 
 func (g git) Switch(config *RepositoryConfig, branch string) (string, error) {
