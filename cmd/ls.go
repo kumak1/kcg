@@ -33,7 +33,7 @@ var lsCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		quietFlag, _ := cmd.Flags().GetBool("quiet")
 		allFlag, _ := cmd.Flags().GetBool("all")
-		kcgCmd := kcg.Command(config)
+		kcg.SetConfig(config)
 
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)
@@ -46,12 +46,12 @@ var lsCmd = &cobra.Command{
 			}
 		}
 
-		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+		for index, repo := range kcg.List(groupFlag, filterFlag) {
 			if quietFlag {
 				fmt.Fprintln(w, index)
 			} else {
-				path, _ := kcgCmd.Path(repo)
-				branch := kcgCmd.CurrentBranch(repo)
+				path, _ := kcg.Path(repo)
+				branch := kcg.CurrentBranch(repo)
 				group := strings.Join(repo.Group, ",")
 
 				if allFlag {

@@ -38,16 +38,16 @@ var switchCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		kcgCmd := kcg.Command(config)
+		kcg.SetConfig(config)
 
 		var wg sync.WaitGroup
 
-		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+		for index, repo := range kcg.List(groupFlag, filterFlag) {
 			wg.Add(1)
 			index := index
 			repo := repo
 			go func() {
-				output, err := kcgCmd.Switch(repo, args[0])
+				output, err := kcg.Switch(repo, args[0])
 				if err == nil {
 					cmd.Printf(kcg.ValidMessageFormat, "✔", index)
 					if !strings.Contains(output, "Already on") {

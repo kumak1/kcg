@@ -37,11 +37,11 @@ var execSetupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		kcgCmd := kcg.Command(config)
+		kcg.SetConfig(config)
 
 		var wg sync.WaitGroup
 
-		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+		for index, repo := range kcg.List(groupFlag, filterFlag) {
 			wg.Add(1)
 			index := index
 			repo := repo
@@ -51,7 +51,7 @@ var execSetupCmd = &cobra.Command{
 
 				for _, command := range repo.Setup {
 					expandEnvCommand := os.ExpandEnv(command)
-					output, err := kcgCmd.Run(repo, expandEnvCommand)
+					output, err := kcg.Run(repo, expandEnvCommand)
 					if err == nil {
 						resultOutput += fmt.Sprintf("  "+kcg.ValidMessageFormat, "run", command)
 						if output != "" {
@@ -92,11 +92,11 @@ var execUpdateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		kcgCmd := kcg.Command(config)
+		kcg.SetConfig(config)
 
 		var wg sync.WaitGroup
 
-		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+		for index, repo := range kcg.List(groupFlag, filterFlag) {
 			wg.Add(1)
 			index := index
 			repo := repo
@@ -106,7 +106,7 @@ var execUpdateCmd = &cobra.Command{
 				resultError := false
 				for _, command := range repo.Update {
 					expandEnvCommand := os.ExpandEnv(command)
-					output, err := kcgCmd.Run(repo, expandEnvCommand)
+					output, err := kcg.Run(repo, expandEnvCommand)
 					if err == nil {
 						resultOutput += fmt.Sprintf("  "+kcg.ValidMessageFormat, "run", command)
 						if output != "" {
