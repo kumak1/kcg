@@ -29,6 +29,8 @@ func Output(path string, name string, arg ...string) (string, error) {
 	return strings.TrimRight(string(out), "\n"), err
 }
 
-func NotError(path string, arg ...string) bool {
-	return exec.Command("ghq", "--help").Run() == nil
+func NotError(path string, name string, arg ...string) bool {
+	cmd := exec.Command(name, arg...)
+	cmd.Dir = path
+	return cmd.Run() == nil
 }
