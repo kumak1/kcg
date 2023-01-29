@@ -42,9 +42,12 @@ jobs:
 
       - name: Go Test
         run: |
-          go test -race -covermode atomic --coverprofile=profile.cov ./...
+          go test -race -covermode atomic --coverprofile=coverage.out ./...
+
+      - name: Comment Coverage
+        uses: k1LoW/octocov-action@v0
 
       - name: Post Coverage
         uses: shogo82148/actions-goveralls@v1
         with:
-          path-to-profile: profile.cov
+          path-to-profile: coverage.out
