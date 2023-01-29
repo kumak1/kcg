@@ -14,7 +14,7 @@ func ErrorMessage(colorText string, whiteText string) error {
 }
 
 func WarningMessage(colorText string, whiteText string) string {
-	return fmt.Sprintf("  \x1b[33m%s\x1b[0m %s\n", colorText, whiteText)
+	return fmt.Sprintf("\x1b[33m%s\x1b[0m %s\n", colorText, whiteText)
 }
 
 func validGroup(groupFlag string, groups []string) bool {
