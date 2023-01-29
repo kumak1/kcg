@@ -2,6 +2,7 @@ package kcg
 
 import (
 	"fmt"
+	kcgGhq "github.com/kumak1/kcg/ghq"
 	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"os/exec"
 	"regexp"
@@ -91,9 +92,7 @@ func (g ghq) Clone(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return fmt.Sprintf(warnMessageFormat, "exists", path), nil
 	} else {
-		cmd := exec.Command("ghq", "get", config.Repo)
-		out, err := cmd.CombinedOutput()
-		return strings.TrimRight(string(out), "\n"), err
+		return kcgGhq.Get(config.Repo)
 	}
 }
 
@@ -142,7 +141,7 @@ func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 		if config.Repo == "" {
 			return "", false
 		}
-		path, _ := kcgExec.GhqPath(config.Repo)
+		path, _ := kcgGhq.Path(config.Repo)
 		return path, path != "" && kcgExec.FileExists(path)
 	}
 }
