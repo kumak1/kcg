@@ -42,11 +42,6 @@ type git struct{}
 
 type ghq struct{}
 
-const (
-	errorMessageFormat = "  \x1b[31m%s\x1b[0m %s\n"
-	warnMessageFormat  = "  \x1b[33m%s\x1b[0m %s\n"
-)
-
 func (g git) Cleanup(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return kcgGit.Cleanup(path)
