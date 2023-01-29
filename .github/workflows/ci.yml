@@ -42,9 +42,9 @@ jobs:
 
       - name: Go Test
         run: |
-          go test -race -covermode atomic --coverprofile=covprofile ./...
+          go test -race -covermode atomic --coverprofile=profile.cov ./...
 
       - name: Post Coverage
-        env:
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-        run: goveralls -coverprofile=covprofile -service=github
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: profile.cov
