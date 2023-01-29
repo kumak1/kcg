@@ -42,8 +42,9 @@ jobs:
 
       - name: Go Test
         run: |
-          go test -race -covermode atomic --coverprofile=coverage.out ./...
+          go test -race -covermode atomic --coverprofile=covprofile ./...
 
       - name: Post Coverage
-        run: |
-          goveralls -coverprofile=coverage.out -service=travis-ci -repotoken ${{ secrets.COVERALLS_TOKEN }}
+        env:
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run: goveralls -coverprofile=covprofile -service=github
