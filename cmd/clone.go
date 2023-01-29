@@ -16,8 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/kumak1/kcg/kcg"
+	"github.com/spf13/viper"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -28,23 +29,46 @@ var cloneCmd = &cobra.Command{
 	Short: "run `git clone` each repository",
 	Long:  `Running git clone command each repository`,
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag, _ := cmd.Flags().GetString("repo")
-		gitCommand := kcg.GitCommand(config)
+		groupFlag, _ := cmd.Flags().GetString("group")
+		filterFlag, _ := cmd.Flags().GetString("filter")
+		kcgCmd := kcg.Command(config)
 
-		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
-				continue
-			}
+		var wg sync.WaitGroup
 
-			err := gitCommand.Clone(repo)
-			if err != nil {
-				fmt.Println(err)
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+			wg.Add(1)
+			index := index
+			repo := repo
+			go func() {
+				output, err := kcgCmd.Clone(repo)
+				if err == nil {
+					cmd.Printf(validMessageFormat, "✔", index)
+					if output != "" {
+						cmd.Println(output)
+					}
+				} else {
+					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Print(output + err.Error())
+				}
+				wg.Done()
+			}()
+		}
+
+		wg.Wait()
+
+		if config.Ghq {
+			for index, repo := range kcgCmd.List("", "") {
+				if path, exists := kcgCmd.Path(repo); path != "" && exists {
+					config.Repos[index].Path = path
+				}
 			}
+			viper.Set("repos", config.Repos)
+			WriteConfig("")
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(cloneCmd)
-	cloneCmd.Flags().String("repo", "", "repository name")
+	assignSearchFlags(cloneCmd)
 }

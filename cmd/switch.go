@@ -18,8 +18,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/kumak1/kcg/kcg"
-
 	"github.com/spf13/cobra"
+	"strings"
+	"sync"
 )
 
 // switchCmd represents the switch command
@@ -35,23 +36,41 @@ var switchCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag, _ := cmd.Flags().GetString("repo")
-		gitCommand := kcg.GitCommand(config)
+		groupFlag, _ := cmd.Flags().GetString("group")
+		filterFlag, _ := cmd.Flags().GetString("filter")
+		kcgCmd := kcg.Command(config)
 
-		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
-				continue
-			}
+		var wg sync.WaitGroup
 
-			err := gitCommand.Switch(repo, args[0])
-			if err != nil {
-				fmt.Println(err)
-			}
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+			wg.Add(1)
+			index := index
+			repo := repo
+			go func() {
+				output, err := kcgCmd.Switch(repo, args[0])
+				if err == nil {
+					cmd.Printf(validMessageFormat, "✔", index)
+					if !strings.Contains(output, "Already on") {
+						cmd.Println(output)
+					}
+				} else {
+					cmd.Printf(invalidMessageFormat, "X", index)
+					if output != "" {
+						cmd.Println(output)
+						cmd.Println(err.Error())
+					} else {
+						cmd.Print(err.Error())
+					}
+				}
+				wg.Done()
+			}()
 		}
+
+		wg.Wait()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(switchCmd)
-	switchCmd.Flags().String("repo", "", "repository name")
+	assignSearchFlags(switchCmd)
 }

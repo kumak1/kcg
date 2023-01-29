@@ -24,9 +24,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	version string
+	cfgFile string
+	config  kcg.Config
+)
 
-var config kcg.Config
+const (
+	validMessageFormat   = "\x1b[32m%s\x1b[0m %s\n"
+	invalidMessageFormat = "\x1b[31m%s\x1b[0m %s\n"
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -55,6 +62,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kcg)")
+	rootCmd.Version = version
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -75,6 +83,7 @@ func initConfig() {
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".kcg")
+		cfgFile = home + "/.kcg"
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -89,4 +98,9 @@ func initConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func assignSearchFlags(cmd *cobra.Command) {
+	cmd.Flags().StringP("group", "g", "", "repository group name")
+	cmd.Flags().StringP("filter", "f", "", "repository filter")
 }

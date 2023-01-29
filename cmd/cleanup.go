@@ -16,10 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/kumak1/kcg/kcg"
-
 	"github.com/spf13/cobra"
+	"sync"
 )
 
 // cleanupCmd represents the cleanup command
@@ -28,23 +27,36 @@ var cleanupCmd = &cobra.Command{
 	Short: "delete merged branch on each repository dir",
 	Long:  `Delete merged branch on each repository dir`,
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag, _ := cmd.Flags().GetString("repo")
-		gitCommand := kcg.GitCommand(config)
+		groupFlag, _ := cmd.Flags().GetString("group")
+		filterFlag, _ := cmd.Flags().GetString("filter")
+		kcgCmd := kcg.Command(config)
 
-		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
-				continue
-			}
+		var wg sync.WaitGroup
 
-			err := gitCommand.Cleanup(repo)
-			if err != nil {
-				fmt.Println(err)
-			}
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+			wg.Add(1)
+			index := index
+			repo := repo
+			go func() {
+				output, err := kcgCmd.Cleanup(repo)
+				if err == nil {
+					cmd.Printf(validMessageFormat, "✔", index)
+					if output != "" {
+						cmd.Println(output)
+					}
+				} else {
+					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Print(output + err.Error())
+				}
+				wg.Done()
+			}()
 		}
+
+		wg.Wait()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(cleanupCmd)
-	cleanupCmd.Flags().String("repo", "", "repository name")
+	assignSearchFlags(cleanupCmd)
 }

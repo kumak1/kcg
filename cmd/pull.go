@@ -16,9 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
+	"sync"
 )
 
 // pullCmd represents the pull command
@@ -27,23 +27,41 @@ var pullCmd = &cobra.Command{
 	Short: "run `git pull` on each repository dir",
 	Long:  `Running git pull command on each repository dir`,
 	Run: func(cmd *cobra.Command, args []string) {
-		repoFlag, _ := cmd.Flags().GetString("repo")
-		gitCommand := kcg.GitCommand(config)
+		groupFlag, _ := cmd.Flags().GetString("group")
+		filterFlag, _ := cmd.Flags().GetString("filter")
+		kcgCmd := kcg.Command(config)
 
-		for index, repo := range config.Repos {
-			if repoFlag != "" && repoFlag != index {
-				continue
-			}
+		var wg sync.WaitGroup
 
-			err := gitCommand.Pull(repo)
-			if err != nil {
-				fmt.Println(err)
-			}
+		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+			wg.Add(1)
+			repo := repo
+			index := index
+			go func() {
+				output, err := kcgCmd.Pull(repo)
+
+				if err == nil {
+					cmd.Printf(validMessageFormat, "✔", index)
+					if output != "Already up to date." {
+						cmd.Println(output)
+					}
+				} else {
+					cmd.Printf(invalidMessageFormat, "X", index)
+					if output != "" {
+						cmd.Println(output)
+						cmd.Println(err.Error())
+					} else {
+						cmd.Print(err.Error())
+					}
+				}
+				wg.Done()
+			}()
 		}
+		wg.Wait()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(pullCmd)
-	pullCmd.Flags().String("repo", "", "repository name")
+	assignSearchFlags(pullCmd)
 }
