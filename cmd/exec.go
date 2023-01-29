@@ -16,7 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
 	"os"
@@ -52,13 +51,14 @@ var execSetupCmd = &cobra.Command{
 				for _, command := range repo.Setup {
 					expandEnvCommand := os.ExpandEnv(command)
 					output, err := kcg.Run(repo, expandEnvCommand)
+					resultOutput += "  "
 					if err == nil {
-						resultOutput += fmt.Sprintf("  "+kcg.ValidMessageFormat, "run", command)
+						resultOutput += kcg.ValidMessage("run", command)
 						if output != "" {
 							resultOutput += output + "\n"
 						}
 					} else {
-						resultOutput += fmt.Sprintf("  "+kcg.InvalidMessageFormat, "run", command)
+						resultOutput += kcg.ErrorMessage("run", command).Error()
 						if output != "" {
 							resultOutput += output + "\n"
 						}
@@ -69,9 +69,9 @@ var execSetupCmd = &cobra.Command{
 				}
 
 				if resultError {
-					cmd.Printf(kcg.InvalidMessageFormat, "X", index)
+					cmd.Print(kcg.ErrorMessage("X", index))
 				} else {
-					cmd.Printf(kcg.ValidMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessage("✔", index))
 				}
 
 				if resultOutput != "" {
@@ -107,13 +107,14 @@ var execUpdateCmd = &cobra.Command{
 				for _, command := range repo.Update {
 					expandEnvCommand := os.ExpandEnv(command)
 					output, err := kcg.Run(repo, expandEnvCommand)
+					resultOutput += "  "
 					if err == nil {
-						resultOutput += fmt.Sprintf("  "+kcg.ValidMessageFormat, "run", command)
+						resultOutput += kcg.ValidMessage("run", command)
 						if output != "" {
 							resultOutput += output + "\n"
 						}
 					} else {
-						resultOutput += fmt.Sprintf("  "+kcg.InvalidMessageFormat, "run", command)
+						resultOutput += kcg.ErrorMessage("run", command).Error()
 						if output != "" {
 							resultOutput += output + "\n"
 						}
@@ -124,9 +125,9 @@ var execUpdateCmd = &cobra.Command{
 				}
 
 				if resultError {
-					cmd.Printf(kcg.InvalidMessageFormat, "X", index)
+					cmd.Print(kcg.ErrorMessage("X", index))
 				} else {
-					cmd.Printf(kcg.ValidMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessage("✔", index))
 				}
 
 				if resultOutput != "" {

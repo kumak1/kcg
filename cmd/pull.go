@@ -41,12 +41,12 @@ var pullCmd = &cobra.Command{
 				output, err := kcg.Pull(repo)
 
 				if err == nil {
-					cmd.Printf(kcg.ValidMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessage("✔", index))
 					if output != "Already up to date." {
 						cmd.Println(output)
 					}
 				} else {
-					cmd.Printf(kcg.InvalidMessageFormat, "X", index)
+					cmd.Print(kcg.ErrorMessage("X", index))
 					if output != "" {
 						cmd.Println(output)
 						cmd.Println(err.Error())

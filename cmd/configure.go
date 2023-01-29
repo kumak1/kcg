@@ -147,7 +147,7 @@ var configureImportCmd = &cobra.Command{
 					}
 				}
 			} else {
-				cmd.PrintErrf("    "+kcg.InvalidMessageFormat, "invalid", "ghq command is not available")
+				cmd.PrintErr(kcg.ErrorMessage("invalid", "ghq command is not available"))
 			}
 		}
 
@@ -175,7 +175,7 @@ var configureExportCmd = &cobra.Command{
 		if bs, err := yaml.Marshal(viper.AllSettings()); err == nil {
 			fmt.Print(string(bs))
 		} else {
-			cmd.PrintErrf("    "+kcg.InvalidMessageFormat, "invalid", err)
+			cmd.PrintErr(kcg.ErrorMessage("invalid", err.Error()))
 		}
 	},
 }
@@ -199,7 +199,7 @@ var configureAddAliasCmd = &cobra.Command{
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
-			fmt.Printf("    "+kcg.InvalidMessageFormat, "not exists", args[0])
+			cmd.PrintErr(kcg.ErrorMessage("not exists", args[0]))
 		}
 	},
 }
@@ -217,7 +217,7 @@ var configureAddGroupCmd = &cobra.Command{
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
-			fmt.Printf("    "+kcg.InvalidMessageFormat, "not exists", args[0])
+			cmd.PrintErr(kcg.ErrorMessage("not exists", args[0]))
 		}
 	},
 }
@@ -235,7 +235,7 @@ var configureAddSetupCmd = &cobra.Command{
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
-			fmt.Printf("    "+kcg.InvalidMessageFormat, "not exists", args[0])
+			cmd.PrintErr(kcg.ErrorMessage("not exists", args[0]))
 		}
 	},
 }
@@ -253,7 +253,7 @@ var configureAddUpdateCmd = &cobra.Command{
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
-			fmt.Printf("    "+kcg.InvalidMessageFormat, "not exists", args[0])
+			cmd.PrintErr(kcg.ErrorMessage("not exists", args[0]))
 		}
 	},
 }
@@ -298,16 +298,16 @@ func importConfigFile(path string) (kcg.Config, error) {
 	var importConfig kcg.Config
 
 	if !kcgExec.FileExists(path) {
-		return importConfig, fmt.Errorf("    "+kcg.InvalidMessageFormat, "not exists", path)
+		return importConfig, kcg.ErrorMessage("not exists", path)
 	}
 
 	viper.SetConfigFile(path)
 	if err := viper.ReadInConfig(); err != nil {
-		return importConfig, fmt.Errorf("    "+kcg.InvalidMessageFormat, "invalid", "cant read config file")
+		return importConfig, kcg.ErrorMessage("invalid", "cant read config file")
 	}
 
 	if err := viper.Unmarshal(&importConfig); err != nil {
-		return importConfig, fmt.Errorf("    "+kcg.InvalidMessageFormat, "invalid", "cant unmarshal config")
+		return importConfig, kcg.ErrorMessage("invalid", "cant unmarshal config")
 	}
 
 	return importConfig, nil
@@ -329,7 +329,8 @@ func importConfigUrl(url string) (kcg.Config, error) {
 	}
 
 	if err := viper.Unmarshal(&importConfig); err != nil {
-		return importConfig, fmt.Errorf("    "+kcg.InvalidMessageFormat, "invalid", "cant unmarshal config")
+		return importConfig, kcg.ErrorMessage("invalid", "cant unmarshal config")
+
 	}
 
 	return importConfig, nil

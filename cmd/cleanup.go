@@ -40,12 +40,12 @@ var cleanupCmd = &cobra.Command{
 			go func() {
 				output, err := kcg.Cleanup(repo)
 				if err == nil {
-					cmd.Printf(kcg.ValidMessageFormat, "✔", index)
+					cmd.Print(kcg.ValidMessage("✔", index))
 					if output != "" {
 						cmd.Println(output)
 					}
 				} else {
-					cmd.Printf(kcg.InvalidMessageFormat, "X", index)
+					cmd.Print(kcg.ErrorMessage("X", index))
 					cmd.Print(output + err.Error())
 				}
 				wg.Done()
