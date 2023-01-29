@@ -49,12 +49,12 @@ var switchCmd = &cobra.Command{
 			go func() {
 				output, err := kcgCmd.Switch(repo, args[0])
 				if err == nil {
-					cmd.Printf(validMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessageFormat, "✔", index)
 					if !strings.Contains(output, "Already on") {
 						cmd.Println(output)
 					}
 				} else {
-					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Printf(kcg.InvalidMessageFormat, "X", index)
 					if output != "" {
 						cmd.Println(output)
 						cmd.Println(err.Error())

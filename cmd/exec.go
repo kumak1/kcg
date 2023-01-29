@@ -53,12 +53,12 @@ var execSetupCmd = &cobra.Command{
 					expandEnvCommand := os.ExpandEnv(command)
 					output, err := kcgCmd.Run(repo, expandEnvCommand)
 					if err == nil {
-						resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
+						resultOutput += fmt.Sprintf("  "+kcg.ValidMessageFormat, "run", command)
 						if output != "" {
 							resultOutput += output + "\n"
 						}
 					} else {
-						resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
+						resultOutput += fmt.Sprintf("  "+kcg.InvalidMessageFormat, "run", command)
 						if output != "" {
 							resultOutput += output + "\n"
 						}
@@ -69,9 +69,9 @@ var execSetupCmd = &cobra.Command{
 				}
 
 				if resultError {
-					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Printf(kcg.InvalidMessageFormat, "X", index)
 				} else {
-					cmd.Printf(validMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessageFormat, "✔", index)
 				}
 
 				if resultOutput != "" {
@@ -108,12 +108,12 @@ var execUpdateCmd = &cobra.Command{
 					expandEnvCommand := os.ExpandEnv(command)
 					output, err := kcgCmd.Run(repo, expandEnvCommand)
 					if err == nil {
-						resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
+						resultOutput += fmt.Sprintf("  "+kcg.ValidMessageFormat, "run", command)
 						if output != "" {
 							resultOutput += output + "\n"
 						}
 					} else {
-						resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
+						resultOutput += fmt.Sprintf("  "+kcg.InvalidMessageFormat, "run", command)
 						if output != "" {
 							resultOutput += output + "\n"
 						}
@@ -124,9 +124,9 @@ var execUpdateCmd = &cobra.Command{
 				}
 
 				if resultError {
-					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Printf(kcg.InvalidMessageFormat, "X", index)
 				} else {
-					cmd.Printf(validMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessageFormat, "✔", index)
 				}
 
 				if resultOutput != "" {
