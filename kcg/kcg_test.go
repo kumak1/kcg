@@ -65,8 +65,25 @@ func TestWarningMessage(t *testing.T) {
 }
 
 func Test_validGroup(t *testing.T) {
-	assert.True(t, validGroup("valid", []string{"valid"}))
-	assert.False(t, validGroup("invalid", []string{"valid"}))
+	type args struct {
+		groupFlag string
+		groups    []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"valid 1", args{"", []string{"a", "b"}}, true},
+		{"valid 2", args{"a", []string{"a", "b"}}, true},
+		{"valid 3", args{"b", []string{"a", "b"}}, true},
+		{"invalid", args{"c", []string{"a", "b"}}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, validGroup(tt.args.groupFlag, tt.args.groups), "validGroup(%v, %v)", tt.args.groupFlag, tt.args.groups)
+		})
+	}
 }
 
 func Test_validFilter(t *testing.T) {
