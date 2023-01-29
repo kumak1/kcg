@@ -32,6 +32,9 @@ type IGitOperator interface {
 	Pull(*RepositoryConfig) (string, error)
 	Run(*RepositoryConfig, string) (string, error)
 	Switch(*RepositoryConfig, string) (string, error)
+
+	// 同じ package 以外から実装を許可しない
+	private()
 }
 
 type git struct{}
@@ -216,6 +219,9 @@ func switchBranch(path string, branch string) (string, error) {
 	out, err := cmd.CombinedOutput()
 	return strings.TrimRight(string(out), "\n"), err
 }
+
+func (g git) private() {}
+func (g ghq) private() {}
 
 func convertedBranch(branchArias []string, branch string) string {
 	if len(branchArias) == 0 {
