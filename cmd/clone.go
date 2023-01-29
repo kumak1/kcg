@@ -63,7 +63,10 @@ var cloneCmd = &cobra.Command{
 				}
 			}
 			viper.Set("repos", config.Repos)
-			WriteConfig("")
+
+			if err := WriteConfig(""); err != nil {
+				cmd.PrintErrln("The config file could not write")
+			}
 		}
 	},
 }
