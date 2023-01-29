@@ -46,8 +46,12 @@ var configureInitCmd = &cobra.Command{
 		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
 		viper.Set("repos", config.Repos)
 		path, _ := cmd.Flags().GetString("path")
-		WriteConfig(path)
-		fmt.Println("Create config file at: " + viper.ConfigFileUsed())
+
+		if err := WriteConfig(path); err == nil {
+			cmd.Println("Create config file at: " + viper.ConfigFileUsed())
+		} else {
+			cmd.PrintErrln("The config file could not write")
+		}
 	},
 }
 
@@ -86,7 +90,9 @@ var configureSetCmd = &cobra.Command{
 			config.Repos[args[0]].Update = update
 		}
 		viper.Set("repos", config.Repos)
-		WriteConfig("")
+		if err := WriteConfig(""); err != nil {
+			cmd.PrintErrln("The config file could not write")
+		}
 	},
 }
 
@@ -146,7 +152,10 @@ var configureImportCmd = &cobra.Command{
 
 		viper.Set("ghq", kcgExec.IsCommandAvailable("ghq"))
 		viper.Set("repos", tempConfig.Repos)
-		WriteConfig(cfgFile)
+
+		if err := WriteConfig(cfgFile); err != nil {
+			cmd.PrintErrln("The config file could not write")
+		}
 	},
 }
 
@@ -184,7 +193,9 @@ var configureAddAliasCmd = &cobra.Command{
 		if _, ok := config.Repos[args[0]]; ok {
 			config.Repos[args[0]].Alias = append(config.Repos[args[0]].Alias, args[1])
 			viper.Set("repos", config.Repos)
-			WriteConfig("")
+			if err := WriteConfig(""); err != nil {
+				cmd.PrintErrln("The config file could not write")
+			}
 		} else {
 			fmt.Printf("    \x1b[31m%s\x1b[0m %s", "not exists", args[0])
 		}
@@ -200,7 +211,9 @@ var configureAddGroupCmd = &cobra.Command{
 		if _, ok := config.Repos[args[0]]; ok {
 			config.Repos[args[0]].Group = append(config.Repos[args[0]].Group, args[1])
 			viper.Set("repos", config.Repos)
-			WriteConfig("")
+			if err := WriteConfig(""); err != nil {
+				cmd.PrintErrln("The config file could not write")
+			}
 		} else {
 			fmt.Printf("    \x1b[31m%s\x1b[0m %s", "not exists", args[0])
 		}
@@ -216,7 +229,9 @@ var configureAddSetupCmd = &cobra.Command{
 		if _, ok := config.Repos[args[0]]; ok {
 			config.Repos[args[0]].Setup = append(config.Repos[args[0]].Setup, args[1])
 			viper.Set("repos", config.Repos)
-			WriteConfig("")
+			if err := WriteConfig(""); err != nil {
+				cmd.PrintErrln("The config file could not write")
+			}
 		} else {
 			fmt.Printf("    \x1b[31m%s\x1b[0m %s", "not exists", args[0])
 		}
@@ -232,7 +247,9 @@ var configureAddUpdateCmd = &cobra.Command{
 		if _, ok := config.Repos[args[0]]; ok {
 			config.Repos[args[0]].Update = append(config.Repos[args[0]].Update, args[1])
 			viper.Set("repos", config.Repos)
-			WriteConfig("")
+			if err := WriteConfig(""); err != nil {
+				cmd.PrintErrln("The config file could not write")
+			}
 		} else {
 			fmt.Printf("    \x1b[31m%s\x1b[0m %s", "not exists", args[0])
 		}
@@ -248,7 +265,9 @@ var configureDeleteCmd = &cobra.Command{
 		initRepo()
 		delete(config.Repos, args[0])
 		viper.Set("repos", config.Repos)
-		WriteConfig("")
+		if err := WriteConfig(""); err != nil {
+			cmd.PrintErrln("The config file could not write")
+		}
 	},
 }
 
@@ -258,7 +277,7 @@ func initRepo() {
 	}
 }
 
-func WriteConfig(path string) {
+func WriteConfig(path string) error {
 	if path != "" {
 		viper.SetConfigFile(path)
 	}
@@ -270,7 +289,7 @@ func WriteConfig(path string) {
 	}
 
 	viper.SetTypeByDefaultValue(false)
-	viper.WriteConfig()
+	return viper.WriteConfig()
 }
 
 func importConfigFile(path string) (kcg.Config, error) {
