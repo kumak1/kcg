@@ -29,9 +29,8 @@ jobs:
 
       - name: Setup
         run: |
-          go install github.com/golang/mock/mockgen@latest
-          go install github.com/onsi/ginkgo/v2/ginkgo@latest
-          go get github.com/onsi/gomega/...
+          go get golang.org/x/tools/cmd/cover
+          go get github.com/mattn/goveralls
 
       - name: Regenerate mock file
         run: |
@@ -44,4 +43,5 @@ jobs:
 
       - name: Go Test
         run: |
-          ginkgo -v --cover --coverprofile=coverage.out --race --coverpkg=./... --covermode=atomic --output-dir=/tmp -r test
+          go test -v --cover --coverprofile=coverage.out ./... 
+          $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
