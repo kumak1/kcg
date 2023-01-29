@@ -3,6 +3,7 @@ package kcg
 import (
 	"fmt"
 	kcgGhq "github.com/kumak1/kcg/ghq"
+	kcgGit "github.com/kumak1/kcg/git"
 	kcgExec "github.com/kumak1/kcg/kcg/exec"
 	"os/exec"
 	"regexp"
@@ -49,7 +50,7 @@ const (
 
 func (g git) Cleanup(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
-		return cleanup(path)
+		return kcgGit.Cleanup(path)
 	} else {
 		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
@@ -57,17 +58,10 @@ func (g git) Cleanup(config *RepositoryConfig) (string, error) {
 
 func (g ghq) Cleanup(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
-		return cleanup(path)
+		return kcgGit.Cleanup(path)
 	} else {
 		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
-}
-
-func cleanup(path string) (string, error) {
-	cmd := exec.Command("sh", "-c", "git branch --merged|egrep -v '\\*|develop|main|master'|xargs git branch -d")
-	cmd.Dir = path
-	out, err := cmd.CombinedOutput()
-	return strings.TrimRight(string(out), "\n"), err
 }
 
 func (g git) Clone(config *RepositoryConfig) (string, error) {
@@ -78,9 +72,7 @@ func (g git) Clone(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
 		return fmt.Sprintf(warnMessageFormat, "exists", path), nil
 	} else {
-		cmd := exec.Command("git", "clone", config.Repo, path)
-		out, err := cmd.CombinedOutput()
-		return strings.TrimRight(string(out), "\n"), err
+		return kcgGit.Clone(config.Repo, path)
 	}
 }
 
@@ -98,7 +90,7 @@ func (g ghq) Clone(config *RepositoryConfig) (string, error) {
 
 func (g git) CurrentBranch(config *RepositoryConfig) string {
 	if path, exists := g.Path(config); exists {
-		return kcgExec.CurrentBranchName(path)
+		return kcgGit.CurrentBranchName(path)
 	} else {
 		return ""
 	}
@@ -106,7 +98,7 @@ func (g git) CurrentBranch(config *RepositoryConfig) string {
 
 func (g ghq) CurrentBranch(config *RepositoryConfig) string {
 	if path, exists := g.Path(config); exists {
-		return kcgExec.CurrentBranchName(path)
+		return kcgGit.CurrentBranchName(path)
 	} else {
 		return ""
 	}
@@ -148,7 +140,7 @@ func (g ghq) Path(config *RepositoryConfig) (string, bool) {
 
 func (g git) Pull(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
-		return pull(path)
+		return kcgGit.Pull(path)
 	} else {
 		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
@@ -156,17 +148,10 @@ func (g git) Pull(config *RepositoryConfig) (string, error) {
 
 func (g ghq) Pull(config *RepositoryConfig) (string, error) {
 	if path, exists := g.Path(config); exists {
-		return pull(path)
+		return kcgGit.Pull(path)
 	} else {
 		return "", fmt.Errorf(errorMessageFormat, "invalid path", path)
 	}
-}
-
-func pull(path string) (string, error) {
-	cmd := exec.Command("git", "pull")
-	cmd.Dir = path
-	out, err := cmd.CombinedOutput()
-	return strings.TrimRight(string(out), "\n"), err
 }
 
 func (g git) Run(config *RepositoryConfig, command string) (string, error) {
@@ -209,14 +194,11 @@ func (g ghq) Switch(config *RepositoryConfig, branch string) (string, error) {
 }
 
 func switchBranch(path string, branch string) (string, error) {
-	if !kcgExec.BranchExists(path, branch) {
+	if kcgGit.BranchExists(path, branch) {
+		return kcgGit.Switch(path, branch)
+	} else {
 		return "", fmt.Errorf(errorMessageFormat, "invalid branch", branch)
 	}
-
-	cmd := exec.Command("git", "switch", branch)
-	cmd.Dir = path
-	out, err := cmd.CombinedOutput()
-	return strings.TrimRight(string(out), "\n"), err
 }
 
 func (g git) private() {}
