@@ -1,7 +1,6 @@
 package kcg
 
 import (
-	"github.com/kumak1/kcg/exec/git"
 	"regexp"
 	"strings"
 )
@@ -9,8 +8,8 @@ import (
 func Switch(config *RepositoryConfig, branch string) (string, error) {
 	if path, exists := Path(config); exists {
 		convertedBranch := convertedBranch(config.Alias, branch)
-		if git.BranchExists(path, convertedBranch) {
-			return git.Switch(path, convertedBranch)
+		if kcgGit.BranchExists(path, convertedBranch) {
+			return kcgGit.Switch(path, convertedBranch)
 		} else {
 			return "", ErrorMessage("invalid branch", convertedBranch)
 		}
