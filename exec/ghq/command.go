@@ -36,7 +36,6 @@ func (d defaultExec) List() []string {
 
 func New(e exec.Interface) Interface {
 	kcgExec = e
-	var i Interface
-	i = defaultExec{}
+	var i Interface = defaultExec{}
 	return i
 }

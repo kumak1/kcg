@@ -17,8 +17,7 @@ type (
 )
 
 func New() Interface {
-	var i Interface
-	i = defaultExec{}
+	var i Interface = defaultExec{}
 	return i
 }
 

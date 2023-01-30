@@ -51,7 +51,6 @@ func (d defaultExec) OriginUrl(path string) (string, error) {
 
 func New(e exec.Interface) Interface {
 	kcgExec = e
-	var i Interface
-	i = defaultExec{}
+	var i Interface = defaultExec{}
 	return i
 }
