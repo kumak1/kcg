@@ -1,6 +1,8 @@
 package exec
 
 import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -18,9 +20,7 @@ func TestFileExists(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FileExists(tt.args.path); got != tt.want {
-				t.Errorf("FileExists() = %v, want %v", got, tt.want)
-			}
+			assert.Equalf(t, tt.want, New().FileExists(tt.args.path), "fileExists(%v)", tt.args.path)
 		})
 	}
 }
@@ -39,9 +39,7 @@ func TestDirExists(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := DirExists(tt.args.path); got != tt.want {
-				t.Errorf("DirExists() = %v, want %v", got, tt.want)
-			}
+			assert.Equalf(t, tt.want, New().DirExists(tt.args.path), "dirExists(%v)", tt.args.path)
 		})
 	}
 }
@@ -56,21 +54,18 @@ func TestOutput(t *testing.T) {
 		name    string
 		args    args
 		want    string
-		wantErr bool
+		wantErr assert.ErrorAssertionFunc
 	}{
-		{"valid", args{"", "echo", []string{"a"}}, "a", false},
-		{"invalid", args{"", "invalid", []string{}}, "", true},
+		{"valid", args{"", "echo", []string{"a"}}, "a", assert.NoError},
+		{"invalid", args{"", "invalid", []string{""}}, "", assert.Error},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Output(tt.args.path, tt.args.name, tt.args.arg...)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Output() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := New().Output(tt.args.path, tt.args.name, tt.args.arg...)
+			if !tt.wantErr(t, err, fmt.Sprintf("output(%v, %v, %v)", tt.args.path, tt.args.name, tt.args.arg)) {
 				return
 			}
-			if got != tt.want {
-				t.Errorf("Output() got = %v, want %v", got, tt.want)
-			}
+			assert.Equalf(t, tt.want, got, "output(%v, %v, %v)", tt.args.path, tt.args.name, tt.args.arg)
 		})
 	}
 }
@@ -79,21 +74,18 @@ func TestNotError(t *testing.T) {
 	type args struct {
 		path string
 		name string
-		arg  []string
 	}
 	tests := []struct {
 		name string
 		args args
 		want bool
 	}{
-		{"valid", args{"", "ls", []string{}}, true},
-		{"invalid", args{"", "invalid", []string{}}, false},
+		{"valid", args{"", "ls"}, true},
+		{"invalid", args{"", "invalid"}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NotError(tt.args.path, tt.args.name, tt.args.arg...); got != tt.want {
-				t.Errorf("NotError() = %v, want %v", got, tt.want)
-			}
+			assert.Equalf(t, tt.want, New().NotError(tt.args.path, tt.args.name), "notError(%v, %v, %v)", tt.args.path, tt.args.name)
 		})
 	}
 }
