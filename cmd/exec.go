@@ -16,7 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
 	"os"
@@ -37,11 +36,11 @@ var execSetupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		kcgCmd := kcg.Command(config)
+		kcg.SetConfig(config)
 
 		var wg sync.WaitGroup
 
-		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+		for index, repo := range kcg.List(groupFlag, filterFlag) {
 			wg.Add(1)
 			index := index
 			repo := repo
@@ -51,14 +50,15 @@ var execSetupCmd = &cobra.Command{
 
 				for _, command := range repo.Setup {
 					expandEnvCommand := os.ExpandEnv(command)
-					output, err := kcgCmd.Run(repo, expandEnvCommand)
+					output, err := kcg.Run(repo, expandEnvCommand)
+					resultOutput += "  "
 					if err == nil {
-						resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
+						resultOutput += kcg.ValidMessage("run", command)
 						if output != "" {
 							resultOutput += output + "\n"
 						}
 					} else {
-						resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
+						resultOutput += kcg.ErrorMessage("run", command).Error()
 						if output != "" {
 							resultOutput += output + "\n"
 						}
@@ -69,9 +69,9 @@ var execSetupCmd = &cobra.Command{
 				}
 
 				if resultError {
-					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Print(kcg.ErrorMessage("X", index))
 				} else {
-					cmd.Printf(validMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessage("✔", index))
 				}
 
 				if resultOutput != "" {
@@ -92,11 +92,11 @@ var execUpdateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		kcgCmd := kcg.Command(config)
+		kcg.SetConfig(config)
 
 		var wg sync.WaitGroup
 
-		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+		for index, repo := range kcg.List(groupFlag, filterFlag) {
 			wg.Add(1)
 			index := index
 			repo := repo
@@ -106,14 +106,15 @@ var execUpdateCmd = &cobra.Command{
 				resultError := false
 				for _, command := range repo.Update {
 					expandEnvCommand := os.ExpandEnv(command)
-					output, err := kcgCmd.Run(repo, expandEnvCommand)
+					output, err := kcg.Run(repo, expandEnvCommand)
+					resultOutput += "  "
 					if err == nil {
-						resultOutput += fmt.Sprintf("  "+validMessageFormat, "run", command)
+						resultOutput += kcg.ValidMessage("run", command)
 						if output != "" {
 							resultOutput += output + "\n"
 						}
 					} else {
-						resultOutput += fmt.Sprintf("  "+invalidMessageFormat, "run", command)
+						resultOutput += kcg.ErrorMessage("run", command).Error()
 						if output != "" {
 							resultOutput += output + "\n"
 						}
@@ -124,9 +125,9 @@ var execUpdateCmd = &cobra.Command{
 				}
 
 				if resultError {
-					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Print(kcg.ErrorMessage("X", index))
 				} else {
-					cmd.Printf(validMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessage("✔", index))
 				}
 
 				if resultOutput != "" {

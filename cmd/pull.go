@@ -29,24 +29,24 @@ var pullCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
-		kcgCmd := kcg.Command(config)
+		kcg.SetConfig(config)
 
 		var wg sync.WaitGroup
 
-		for index, repo := range kcgCmd.List(groupFlag, filterFlag) {
+		for index, repo := range kcg.List(groupFlag, filterFlag) {
 			wg.Add(1)
 			repo := repo
 			index := index
 			go func() {
-				output, err := kcgCmd.Pull(repo)
+				output, err := kcg.Pull(repo)
 
 				if err == nil {
-					cmd.Printf(validMessageFormat, "✔", index)
+					cmd.Printf(kcg.ValidMessage("✔", index))
 					if output != "Already up to date." {
 						cmd.Println(output)
 					}
 				} else {
-					cmd.Printf(invalidMessageFormat, "X", index)
+					cmd.Print(kcg.ErrorMessage("X", index))
 					if output != "" {
 						cmd.Println(output)
 						cmd.Println(err.Error())
