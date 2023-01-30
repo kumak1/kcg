@@ -3,6 +3,7 @@ package kcg
 import (
 	"fmt"
 	"github.com/kumak1/kcg/exec"
+	"github.com/kumak1/kcg/exec/ghq"
 	"github.com/kumak1/kcg/exec/git"
 	"strings"
 )
@@ -10,6 +11,7 @@ import (
 var (
 	kcgExec exec.Interface
 	kcgGit  git.Interface
+	kcgGhq  ghq.Interface
 )
 
 func Initialize(config Config) {
@@ -20,6 +22,9 @@ func Initialize(config Config) {
 	}
 	if kcgGit == nil {
 		kcgGit = git.New(kcgExec)
+	}
+	if kcgGhq == nil {
+		kcgGhq = ghq.New(kcgExec)
 	}
 }
 

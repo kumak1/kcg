@@ -43,3 +43,10 @@ func List() map[string]string {
 	}
 	return pathList
 }
+
+func New(e exec.Interface) Interface {
+	kcgExec = e
+	var i Interface
+	i = defaultExec{}
+	return i
+}
