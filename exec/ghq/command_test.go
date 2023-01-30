@@ -17,17 +17,17 @@ type (
 	}
 )
 
-func (m MockedInterface) FileExists(s string) bool {
+func (m *MockedInterface) FileExists(s string) bool {
 	args := m.Called()
 	return args.Bool(0)
 }
 
-func (m MockedInterface) DirExists(s string) bool {
+func (m *MockedInterface) DirExists(s string) bool {
 	args := m.Called()
 	return args.Bool(0)
 }
 
-func (m MockedInterface) Output(s string, s2 string, s3 ...string) (string, error) {
+func (m *MockedInterface) Output(s string, s2 string, s3 ...string) (string, error) {
 	args := m.Called()
 	if args.Bool(1) {
 		return args.String(0), nil
