@@ -6,24 +6,36 @@ import (
 	"strings"
 )
 
+var kcgExec exec.Interface
+
+func initialize() {
+	if kcgExec == nil {
+		kcgExec = exec.New()
+	}
+}
+
 func Valid() bool {
-	return exec.NotError("", "ghq", "--help")
+	initialize()
+	return kcgExec.NotError("", "ghq", "--help")
 }
 
 func Get(repo string) (string, error) {
-	return exec.Output("", "ghq", "get", repo)
+	initialize()
+	return kcgExec.Output("", "ghq", "get", repo)
 }
 
 func Path(repo string) (string, error) {
-	return exec.Output("", "ghq", "list", "-p", "-e", repo)
+	initialize()
+	return kcgExec.Output("", "ghq", "list", "-p", "-e", repo)
 }
 
 func List() map[string]string {
-	ghqList, _ := exec.Output("", "ghq", "list", "-p")
+	initialize()
+	ghqList, _ := kcgExec.Output("", "ghq", "list", "-p")
 	pathList := map[string]string{}
 	for _, path := range strings.Split(ghqList, "\n") {
 		if path != "" {
-			url, _ := exec.Output(path, "git", "config", "--get", "remote.origin.url")
+			url, _ := kcgExec.Output(path, "git", "config", "--get", "remote.origin.url")
 			organization := filepath.Base(filepath.Dir(path))
 			repository := filepath.Base(path)
 			pathList[organization+"/"+repository] = url

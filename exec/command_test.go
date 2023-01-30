@@ -20,7 +20,7 @@ func TestFileExists(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, FileExists(tt.args.path), "FileExists(%v)", tt.args.path)
+			assert.Equalf(t, tt.want, New().FileExists(tt.args.path), "fileExists(%v)", tt.args.path)
 		})
 	}
 }
@@ -39,7 +39,7 @@ func TestDirExists(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, DirExists(tt.args.path), "DirExists(%v)", tt.args.path)
+			assert.Equalf(t, tt.want, New().DirExists(tt.args.path), "dirExists(%v)", tt.args.path)
 		})
 	}
 }
@@ -61,11 +61,11 @@ func TestOutput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Output(tt.args.path, tt.args.name, tt.args.arg...)
-			if !tt.wantErr(t, err, fmt.Sprintf("Output(%v, %v, %v)", tt.args.path, tt.args.name, tt.args.arg)) {
+			got, err := New().Output(tt.args.path, tt.args.name, tt.args.arg...)
+			if !tt.wantErr(t, err, fmt.Sprintf("output(%v, %v, %v)", tt.args.path, tt.args.name, tt.args.arg)) {
 				return
 			}
-			assert.Equalf(t, tt.want, got, "Output(%v, %v, %v)", tt.args.path, tt.args.name, tt.args.arg)
+			assert.Equalf(t, tt.want, got, "output(%v, %v, %v)", tt.args.path, tt.args.name, tt.args.arg)
 		})
 	}
 }
@@ -85,7 +85,7 @@ func TestNotError(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, NotError(tt.args.path, tt.args.name), "NotError(%v, %v, %v)", tt.args.path, tt.args.name)
+			assert.Equalf(t, tt.want, New().NotError(tt.args.path, tt.args.name), "notError(%v, %v, %v)", tt.args.path, tt.args.name)
 		})
 	}
 }

@@ -297,7 +297,7 @@ func WriteConfig(path string) error {
 func importConfigFile(path string) (kcg.Config, error) {
 	var importConfig kcg.Config
 
-	if !kcgExec.FileExists(path) {
+	if !kcgExec.New().FileExists(path) {
 		return importConfig, kcg.ErrorMessage("not exists", path)
 	}
 

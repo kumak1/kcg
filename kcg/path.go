@@ -8,15 +8,15 @@ import (
 func Path(config *RepositoryConfig) (string, bool) {
 	if useGhq {
 		if config.Path != "" {
-			return config.Path, exec.FileExists(config.Path)
+			return config.Path, exec.New().FileExists(config.Path)
 		} else {
 			if config.Repo == "" {
 				return "", false
 			}
 			path, _ := ghq.Path(config.Repo)
-			return path, path != "" && exec.FileExists(path)
+			return path, path != "" && exec.New().FileExists(path)
 		}
 	} else {
-		return config.Path, config.Path != "" && exec.FileExists(config.Path)
+		return config.Path, config.Path != "" && exec.New().FileExists(config.Path)
 	}
 }
