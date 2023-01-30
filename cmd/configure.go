@@ -19,7 +19,6 @@ import (
 	"bytes"
 	"fmt"
 	kcgExec "github.com/kumak1/kcg/exec"
-	"github.com/kumak1/kcg/exec/ghq"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -44,7 +43,7 @@ var configureInitCmd = &cobra.Command{
 	Long:  `Create an empty config file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
-		viper.Set("ghq", ghq.Valid())
+		viper.Set("ghq", kcg.GhqValid())
 		viper.Set("repos", config.Repos)
 		path, _ := cmd.Flags().GetString("path")
 
@@ -70,7 +69,7 @@ var configureSetCmd = &cobra.Command{
 			config.Repos[args[0]].Repo = repo
 
 			if config.Ghq {
-				if path, err := ghq.Path(repo); err == nil {
+				if path, ok := kcg.Path(config.Repos[args[0]]); ok {
 					config.Repos[args[0]].Path = path
 				}
 			}
@@ -135,14 +134,14 @@ var configureImportCmd = &cobra.Command{
 		}
 
 		if useGhq {
-			if ghq.Valid() {
-				for index, repo := range ghq.List() {
+			if kcg.GhqValid() {
+				for index, repo := range kcg.GhqList() {
 					if _, ok := tempConfig.Repos[index]; !ok {
 						tempConfig.Repos[index] = &kcg.RepositoryConfig{}
 					}
 					tempConfig.Repos[index].Repo = repo
 
-					if path, err := ghq.Path(repo); err == nil {
+					if path, ok := kcg.Path(config.Repos[index]); ok {
 						tempConfig.Repos[index].Path = path
 					}
 				}
@@ -151,7 +150,7 @@ var configureImportCmd = &cobra.Command{
 			}
 		}
 
-		viper.Set("ghq", ghq.Valid())
+		viper.Set("ghq", kcg.GhqValid())
 		viper.Set("repos", tempConfig.Repos)
 
 		if err := WriteConfig(cfgFile); err != nil {
