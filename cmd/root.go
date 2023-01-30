@@ -87,6 +87,8 @@ func initConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	kcg.Initialize(config)
 }
 
 func assignSearchFlags(cmd *cobra.Command) {

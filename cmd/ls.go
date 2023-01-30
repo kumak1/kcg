@@ -33,7 +33,6 @@ var lsCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		quietFlag, _ := cmd.Flags().GetBool("quiet")
 		allFlag, _ := cmd.Flags().GetBool("all")
-		kcg.SetConfig(config)
 
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 1, '\t', 0)

@@ -2,8 +2,21 @@ package kcg
 
 import (
 	"fmt"
+	"github.com/kumak1/kcg/exec"
 	"strings"
 )
+
+var (
+	kcgExec exec.Interface
+)
+
+func Initialize(config Config) {
+	setConfig(config)
+
+	if kcgExec == nil {
+		kcgExec = exec.New()
+	}
+}
 
 func ValidMessage(colorText string, whiteText string) string {
 	return fmt.Sprintf("\x1b[32m%s\x1b[0m %s\n", colorText, whiteText)

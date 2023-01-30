@@ -14,10 +14,12 @@ type RepositoryConfig struct {
 	Update []string
 }
 
-var useGhq bool
-var repositoryConfig map[string]*RepositoryConfig
+var (
+	useGhq           bool
+	repositoryConfig map[string]*RepositoryConfig
+)
 
-func SetConfig(config Config) {
+func setConfig(config Config) {
 	useGhq = config.Ghq
 	repositoryConfig = config.Repos
 }

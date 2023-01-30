@@ -169,7 +169,6 @@ var configureExportCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
 		viper.Reset()
-		kcg.SetConfig(config)
 		viper.Set("repos", kcg.List(groupFlag, filterFlag))
 
 		if bs, err := yaml.Marshal(viper.AllSettings()); err == nil {
