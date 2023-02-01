@@ -3,8 +3,123 @@ package kcg
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
+
+type (
+	MockedExecInterface struct {
+		mock.Mock
+	}
+	MockedGitInterface struct {
+		mock.Mock
+	}
+	MockedGhqInterface struct {
+		mock.Mock
+	}
+)
+
+func (m *MockedExecInterface) FileExists(s string) bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockedExecInterface) DirExists(s string) bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockedExecInterface) Output(s string, s2 string, s3 ...string) (string, error) {
+	args := m.Called()
+	if args.Bool(1) {
+		return args.String(0), nil
+	} else {
+		return args.String(0), fmt.Errorf("err")
+	}
+}
+
+func (m *MockedExecInterface) NotError(s string, s2 string, s3 ...string) bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockedGitInterface) BranchExists(path string, branch string) bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockedGitInterface) CurrentBranchName(path string) string {
+	args := m.Called()
+	return args.String(0)
+}
+func (m *MockedGitInterface) Switch(path string, branch string) (string, error) {
+	args := m.Called()
+	if args.Bool(1) {
+		return args.String(0), nil
+	} else {
+		return args.String(0), fmt.Errorf("err")
+	}
+}
+func (m *MockedGitInterface) Pull(path string) (string, error) {
+	args := m.Called()
+	if args.Bool(1) {
+		return args.String(0), nil
+	} else {
+		return args.String(0), fmt.Errorf("err")
+	}
+}
+func (m *MockedGitInterface) Clone(repo string, path string) (string, error) {
+	args := m.Called()
+	if args.Bool(1) {
+		return args.String(0), nil
+	} else {
+		return args.String(0), fmt.Errorf("err")
+	}
+}
+func (m *MockedGitInterface) Cleanup(path string) (string, error) {
+	args := m.Called()
+	if args.Bool(1) {
+		return args.String(0), nil
+	} else {
+		return args.String(0), fmt.Errorf("err")
+	}
+}
+func (m *MockedGitInterface) OriginUrl(path string) (string, error) {
+	args := m.Called()
+	if args.Bool(1) {
+		return args.String(0), nil
+	} else {
+		return args.String(0), fmt.Errorf("err")
+	}
+}
+
+func (m *MockedGhqInterface) Valid() bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockedGhqInterface) Get(s string) (string, error) {
+	args := m.Called()
+	if args.Bool(1) {
+		return args.String(0), nil
+	} else {
+		return args.String(0), fmt.Errorf("err")
+	}
+}
+
+func (m *MockedGhqInterface) Path(s string) (string, error) {
+	args := m.Called()
+	if args.Bool(1) {
+		return args.String(0), nil
+	} else {
+		return args.String(0), fmt.Errorf("err")
+	}
+}
+
+func (m *MockedGhqInterface) List() []string {
+	args := m.Called()
+	return []string{args.String(0)}
+}
 
 func TestValidMessage(t *testing.T) {
 	type args struct {
