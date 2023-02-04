@@ -135,13 +135,15 @@ var configureImportCmd = &cobra.Command{
 
 		if useGhq {
 			if kcg.GhqValid() {
+				tempConfig.Ghq = true
+				kcg.Initialize(tempConfig)
 				for index, repo := range kcg.GhqList() {
 					if _, ok := tempConfig.Repos[index]; !ok {
 						tempConfig.Repos[index] = &kcg.RepositoryConfig{}
 					}
 					tempConfig.Repos[index].Repo = repo
 
-					if path, ok := kcg.Path(config.Repos[index]); ok {
+					if path, ok := kcg.Path(tempConfig.Repos[index]); ok {
 						tempConfig.Repos[index].Path = path
 					}
 				}
