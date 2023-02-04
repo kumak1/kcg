@@ -221,3 +221,47 @@ func Test_validFilter(t *testing.T) {
 		})
 	}
 }
+
+func TestGhqValid(t *testing.T) {
+	tests := []struct {
+		name string
+		mock bool
+		want bool
+	}{
+		{"valid", true, true},
+		{"valid", false, false},
+	}
+	for _, tt := range tests {
+		testGhqObj := new(MockedGhqInterface)
+		testGhqObj.On("Valid").Return(tt.mock)
+		kcgGhq = testGhqObj
+
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, GhqValid(), "GhqValid()")
+		})
+	}
+}
+
+func TestGhqList(t *testing.T) {
+	tests := []struct {
+		name     string
+		mockList string
+		mockUrl  string
+		want     map[string]string
+	}{
+		{"empty", "github.com/kumak1/kcg", "kumak1.com", map[string]string{"kumak1/kcg": "kumak1.com"}},
+	}
+	for _, tt := range tests {
+		testGhqObj := new(MockedGhqInterface)
+		testGhqObj.On("List").Return(tt.mockList)
+		kcgGhq = testGhqObj
+
+		testGitObj := new(MockedGitInterface)
+		testGitObj.On("OriginUrl").Return(tt.mockUrl, true)
+		kcgGit = testGitObj
+
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, GhqList(), "GhqList()")
+		})
+	}
+}
