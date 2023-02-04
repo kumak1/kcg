@@ -265,3 +265,28 @@ func TestGhqList(t *testing.T) {
 		})
 	}
 }
+
+func TestInitialize(t *testing.T) {
+	type args struct {
+		config Config
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantGhq bool
+	}{
+		{"valid", args{config: Config{Ghq: true}}, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			kcgExec = nil
+			kcgGit = nil
+			kcgGhq = nil
+			Initialize(tt.args.config)
+			assert.Equal(t, tt.wantGhq, useGhq)
+			assert.NotNil(t, kcgExec)
+			assert.NotNil(t, kcgGit)
+			assert.NotNil(t, kcgGhq)
+		})
+	}
+}
