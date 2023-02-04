@@ -265,3 +265,22 @@ func TestGhqList(t *testing.T) {
 		})
 	}
 }
+
+func TestInitialize(t *testing.T) {
+	type args struct {
+		config Config
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantGhq bool
+	}{
+		{"valid", args{config: Config{Ghq: true}}, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Initialize(tt.args.config)
+			assert.Equal(t, tt.wantGhq, useGhq)
+		})
+	}
+}
