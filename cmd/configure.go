@@ -83,12 +83,6 @@ var configureSetCmd = &cobra.Command{
 		if group, _ := cmd.Flags().GetStringArray("group"); len(group) != 0 {
 			config.Repos[args[0]].Group = group
 		}
-		if setup, _ := cmd.Flags().GetStringArray("setup"); len(setup) != 0 {
-			config.Repos[args[0]].Setup = setup
-		}
-		if update, _ := cmd.Flags().GetStringArray("update"); len(update) != 0 {
-			config.Repos[args[0]].Update = update
-		}
 		if err := UpdateConfig(); err != nil {
 			cmd.PrintErrln("The config file could not write")
 		}
@@ -219,40 +213,6 @@ var configureAddGroupCmd = &cobra.Command{
 	},
 }
 
-var configureAddSetupCmd = &cobra.Command{
-	Use:   "setup <name> <command>",
-	Short: "Add setup command",
-	Long:  `Add setup command`,
-	Args:  cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
-		if _, ok := config.Repos[args[0]]; ok {
-			config.Repos[args[0]].Setup = append(config.Repos[args[0]].Setup, args[1])
-			if err := UpdateConfig(); err != nil {
-				cmd.PrintErrln("The config file could not write")
-			}
-		} else {
-			cmd.PrintErr(kcg.ErrorMessage("not exists", args[0]))
-		}
-	},
-}
-
-var configureAddUpdateCmd = &cobra.Command{
-	Use:   "update <name> <command>",
-	Short: "Add update command",
-	Long:  `Add update command`,
-	Args:  cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
-		if _, ok := config.Repos[args[0]]; ok {
-			config.Repos[args[0]].Update = append(config.Repos[args[0]].Update, args[1])
-			if err := UpdateConfig(); err != nil {
-				cmd.PrintErrln("The config file could not write")
-			}
-		} else {
-			cmd.PrintErr(kcg.ErrorMessage("not exists", args[0]))
-		}
-	},
-}
-
 var configureDeleteCmd = &cobra.Command{
 	Use:   "delete <name>",
 	Short: "Delete repository config",
@@ -364,8 +324,6 @@ func init() {
 	configureCmd.AddCommand(configureAddCmd)
 	configureAddCmd.AddCommand(configureAddGroupCmd)
 	configureAddCmd.AddCommand(configureAddAliasCmd)
-	configureAddCmd.AddCommand(configureAddSetupCmd)
-	configureAddCmd.AddCommand(configureAddUpdateCmd)
 
 	configureCmd.AddCommand(configureDeleteCmd)
 }

@@ -6,13 +6,11 @@ type Config struct {
 }
 
 type RepositoryConfig struct {
-	Repo   string
-	Path   string
-	Alias  []string
-	Group  []string
-	Setup  []string
-	Update []string
-	Exec   map[string][]string
+	Repo  string
+	Path  string
+	Alias []string
+	Group []string
+	Exec  map[string][]string
 }
 
 var (

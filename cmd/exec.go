@@ -25,96 +25,71 @@ var execCmd = &cobra.Command{
 	Use:   "exec",
 	Short: "Run commands on each repository",
 	Long:  `Run commands on each repository`,
-}
-
-// execSetupCmd represents the setup command
-var execSetupCmd = &cobra.Command{
-	Use:   "setup",
-	Short: "Run setup commands on each repository",
-	Long:  `Running setup commands on each repository`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			cmd.Print(cmd.Help())
+			return
+		}
+
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
-			resultOutput := ""
-			resultError := false
+		execCommandName := args[0]
+		resultOutput := ""
+		resultError := false
+		validCommand := false
 
-			for _, command := range repoConf.Setup {
-				expandEnvCommand := os.ExpandEnv(command)
-				output, err := kcg.Run(repoConf, expandEnvCommand)
-				resultOutput += "  "
-				if err == nil {
-					resultOutput += kcg.ValidMessage("run", command)
-					if output != "" {
-						resultOutput += output + "\n"
+		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
+			for execKey, execStrings := range repoConf.Exec {
+				if execKey == execCommandName {
+					validCommand = true
+					for _, cmdString := range execStrings {
+						expandEnvCommand := os.ExpandEnv(cmdString)
+						output, err := kcg.Run(repoConf, expandEnvCommand)
+
+						if err == nil {
+							resultOutput += kcg.ValidMessage("run", cmdString)
+							if output != "" {
+								resultOutput += output + "\n"
+							}
+						} else {
+							resultOutput += kcg.ErrorMessage("run", cmdString).Error()
+							if output != "" {
+								resultOutput += output + "\n"
+							}
+							resultOutput += err.Error() + "\n"
+							resultError = true
+							break
+						}
 					}
-				} else {
-					resultOutput += kcg.ErrorMessage("run", command).Error()
-					if output != "" {
-						resultOutput += output + "\n"
+
+					if resultError {
+						cmd.Print(kcg.ErrorMessage("X", key))
+					} else {
+						cmd.Printf(kcg.ValidMessage("✔", key))
 					}
-					resultOutput += err.Error() + "\n"
-					resultError = true
-					break
+
+					if resultOutput != "" {
+						cmd.Print(resultOutput)
+					}
 				}
 			}
-
-			if resultError {
-				cmd.Print(kcg.ErrorMessage("X", key))
-			} else {
-				cmd.Printf(kcg.ValidMessage("✔", key))
-			}
-
-			if resultOutput != "" {
-				cmd.Print(resultOutput)
-			}
 		}, groupFlag, filterFlag)
+
+		if !validCommand {
+			cmd.Print(cmd.Help())
+		}
 	},
 }
 
-var execUpdateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "Run update commands on each repository",
-	Long:  `Running update commands on each repository`,
-	Run: func(cmd *cobra.Command, args []string) {
-		groupFlag, _ := cmd.Flags().GetString("group")
-		filterFlag, _ := cmd.Flags().GetString("filter")
-
-		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
-			resultOutput := ""
-			resultError := false
-			for _, command := range repoConf.Update {
-				expandEnvCommand := os.ExpandEnv(command)
-				output, err := kcg.Run(repoConf, expandEnvCommand)
-				resultOutput += "  "
-				if err == nil {
-					resultOutput += kcg.ValidMessage("run", command)
-					if output != "" {
-						resultOutput += output + "\n"
-					}
-				} else {
-					resultOutput += kcg.ErrorMessage("run", command).Error()
-					if output != "" {
-						resultOutput += output + "\n"
-					}
-					resultOutput += err.Error() + "\n"
-					resultError = true
-					break
-				}
-			}
-
-			if resultError {
-				cmd.Print(kcg.ErrorMessage("X", key))
-			} else {
-				cmd.Printf(kcg.ValidMessage("✔", key))
-			}
-
-			if resultOutput != "" {
-				cmd.Print(resultOutput)
-			}
-		}, groupFlag, filterFlag)
-	},
+func execList(group string, filter string) map[string][]string {
+	execList := map[string][]string{}
+	for key, repoConf := range kcg.List(group, filter) {
+		for execKey := range repoConf.Exec {
+			execList[execKey] = append(execList[execKey], key)
+		}
+	}
+	return execList
 }
 
 var execListCmd = &cobra.Command{
@@ -126,13 +101,7 @@ var execListCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 		quietFlag, _ := cmd.Flags().GetBool("quiet")
 
-		execList := map[string][]string{}
-		for key, repoConf := range kcg.List(groupFlag, filterFlag) {
-			for execKey := range repoConf.Exec {
-				execList[execKey] = append(execList[execKey], key)
-			}
-		}
-
+		execList := execList(groupFlag, filterFlag)
 		for listKey, listValue := range execList {
 			if quietFlag {
 				cmd.Println(listKey)
@@ -181,12 +150,7 @@ var execSetCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(execCmd)
-
-	execCmd.AddCommand(execSetupCmd)
-	assignSearchFlags(execSetupCmd)
-
-	execCmd.AddCommand(execUpdateCmd)
-	assignSearchFlags(execUpdateCmd)
+	assignSearchFlags(execCmd)
 
 	execCmd.AddCommand(execListCmd)
 	assignSearchFlags(execListCmd)
