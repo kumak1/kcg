@@ -12,6 +12,7 @@ type RepositoryConfig struct {
 	Group  []string
 	Setup  []string
 	Update []string
+	Exec   map[string][]string
 }
 
 var (
