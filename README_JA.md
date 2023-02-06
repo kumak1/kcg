@@ -108,7 +108,7 @@ kcg configure import --url="gist_raw_file_url"
 |:-----------------------------------------------------|:-------------------------|
 | `kcg exec list`                                      | 登録された exec コマンドを一覧表示します。 |
 | `kcg exec set <name> -n "command_name" -c "command"` | exec コマンドを登録します。         |
-| `kcg exec <command>`                                 | 登録した exec コマンドを実行します。    |
+| `kcg exec <command_name>`                            | 登録した exec コマンドを実行します。    |
 
 上記の `set` 以外のコマンドで `--filter="needle"` や `--group="group_name"` オプションによって対象リポジトリを絞ることが可能です。
 

@@ -108,7 +108,7 @@ Can use narrow down repository option. `--filter="needle"` `--group="group_name"
 |:-----------------------------------------------------|:---------------------------------|
 | `kcg exec list`                                      | Show registered exec commands.   |
 | `kcg exec set <name> -n "command_name" -c "command"` | Register exec commands.          |
-| `kcg exec <command>`                                 | Execute registered commands.     |
+| `kcg exec <command_name>`                            | Execute registered commands.     |
 
 Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
 
