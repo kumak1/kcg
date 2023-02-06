@@ -140,6 +140,9 @@ var execSetCmd = &cobra.Command{
 			return
 		}
 
+		if config.Repos[repoName].Exec == nil {
+			config.Repos[repoName].Exec = map[string][]string{}
+		}
 		config.Repos[repoName].Exec[commandName] = commandStrings
 
 		if err := UpdateConfig(); err != nil {

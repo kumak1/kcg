@@ -64,6 +64,7 @@ var configureSetCmd = &cobra.Command{
 		initRepo()
 		if _, ok := config.Repos[args[0]]; !ok {
 			config.Repos[args[0]] = &kcg.RepositoryConfig{}
+			config.Repos[args[0]].Exec = map[string][]string{}
 		}
 		if repo, _ := cmd.Flags().GetString("repo"); repo != "" {
 			config.Repos[args[0]].Repo = repo
@@ -310,8 +311,6 @@ func init() {
 	configureSetCmd.Flags().String("path", "", "local dir")
 	configureSetCmd.Flags().StringArray("branch-alias", []string{}, "specify like \"NAME:VALUE\"")
 	configureSetCmd.Flags().StringArray("group", []string{}, "group")
-	configureSetCmd.Flags().StringArray("setup", []string{}, "setup command")
-	configureSetCmd.Flags().StringArray("update", []string{}, "update command")
 
 	configureCmd.AddCommand(configureImportCmd)
 	configureImportCmd.Flags().Bool("ghq", false, "Import from 'ghq list'")
