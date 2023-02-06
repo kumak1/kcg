@@ -14,8 +14,10 @@
 - [Overview](#overview)
 - [Install](#install)
 - [Getting Started](#getting-started)
-    - [Quick Start Example](#quick-start-example)
+  - [Quick Start Example](#quick-start-example)
 - [Usage](#usage)
+- [Exec command usage](#execute-specify-commands)
+  - [Example](#set-and-execute-example)
 
 ## Overview
 
@@ -100,7 +102,7 @@ kcg configure import --url="gist_raw_file_url"
 
 Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
 
-### Execute Specify Commands
+## Execute Specify Commands
 
 | command                                              | description                      |
 |:-----------------------------------------------------|:---------------------------------|
@@ -110,7 +112,7 @@ Can use narrow down repository option. `--filter="needle"` `--group="group_name"
 
 Can use narrow down repository option. `--filter="needle"` `--group="group_name"`
 
-#### Set and Execute Example
+### Set and Execute Example
 
 ```shell
 % kcg exec set kumak1/kcg --name="test" --command="go test -race -covermode atomic --coverprofile=coverage.out ./..."

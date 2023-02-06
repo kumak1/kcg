@@ -16,8 +16,8 @@
 - [セットアップ](#セットアップ)
   - [設定例](#設定例)
 - [基本的な使い方](#基本的な使い方)
-  - [execコマンドの使い方](#exec-コマンドの使い方)
-    - [設定例](#exec-コマンドの設定例)
+- [execコマンドの使い方](#exec-コマンドの使い方)
+  - [設定例](#exec-コマンドの設定例)
 
 ## 概要
 
@@ -102,7 +102,7 @@ kcg configure import --url="gist_raw_file_url"
 
 上記のコマンド全てで `--filter="needle"` や `--group="group_name"` オプションによって対象リポジトリを絞ることが可能です。
 
-### exec コマンドの使い方
+## exec コマンドの使い方
 
 | command                                              | description              |
 |:-----------------------------------------------------|:-------------------------|
@@ -112,7 +112,7 @@ kcg configure import --url="gist_raw_file_url"
 
 上記の `set` 以外のコマンドで `--filter="needle"` や `--group="group_name"` オプションによって対象リポジトリを絞ることが可能です。
 
-#### exec コマンドの設定例
+### exec コマンドの設定例
 
 ```shell
 % kcg exec set kumak1/kcg --name="test" --command="go test -race -covermode atomic --coverprofile=coverage.out ./..."
