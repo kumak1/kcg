@@ -89,8 +89,7 @@ var configureSetCmd = &cobra.Command{
 		if update, _ := cmd.Flags().GetStringArray("update"); len(update) != 0 {
 			config.Repos[args[0]].Update = update
 		}
-		viper.Set("repos", config.Repos)
-		if err := WriteConfig(""); err != nil {
+		if err := UpdateConfig(); err != nil {
 			cmd.PrintErrln("The config file could not write")
 		}
 	},
@@ -194,8 +193,7 @@ var configureAddAliasCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if _, ok := config.Repos[args[0]]; ok {
 			config.Repos[args[0]].Alias = append(config.Repos[args[0]].Alias, args[1])
-			viper.Set("repos", config.Repos)
-			if err := WriteConfig(""); err != nil {
+			if err := UpdateConfig(); err != nil {
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
@@ -212,8 +210,7 @@ var configureAddGroupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if _, ok := config.Repos[args[0]]; ok {
 			config.Repos[args[0]].Group = append(config.Repos[args[0]].Group, args[1])
-			viper.Set("repos", config.Repos)
-			if err := WriteConfig(""); err != nil {
+			if err := UpdateConfig(); err != nil {
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
@@ -230,8 +227,7 @@ var configureAddSetupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if _, ok := config.Repos[args[0]]; ok {
 			config.Repos[args[0]].Setup = append(config.Repos[args[0]].Setup, args[1])
-			viper.Set("repos", config.Repos)
-			if err := WriteConfig(""); err != nil {
+			if err := UpdateConfig(); err != nil {
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
@@ -248,8 +244,7 @@ var configureAddUpdateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if _, ok := config.Repos[args[0]]; ok {
 			config.Repos[args[0]].Update = append(config.Repos[args[0]].Update, args[1])
-			viper.Set("repos", config.Repos)
-			if err := WriteConfig(""); err != nil {
+			if err := UpdateConfig(); err != nil {
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
@@ -266,8 +261,7 @@ var configureDeleteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
 		delete(config.Repos, args[0])
-		viper.Set("repos", config.Repos)
-		if err := WriteConfig(""); err != nil {
+		if err := UpdateConfig(); err != nil {
 			cmd.PrintErrln("The config file could not write")
 		}
 	},
@@ -277,6 +271,15 @@ func initRepo() {
 	if config.Repos == nil {
 		config.Repos = map[string]*kcg.RepositoryConfig{}
 	}
+}
+
+func UpdateConfig() error {
+	viper.Set("repos", config.Repos)
+	if err := WriteConfig(""); err != nil {
+		return fmt.Errorf("the config file could not write")
+	}
+
+	return nil
 }
 
 func WriteConfig(path string) error {
