@@ -16,6 +16,8 @@
 - [セットアップ](#セットアップ)
   - [設定例](#設定例)
 - [基本的な使い方](#基本的な使い方)
+  - [execコマンドの使い方](#exec-コマンドの使い方)
+    - [設定例](#exec-コマンドの設定例)
 
 ## 概要
 
@@ -99,6 +101,36 @@ kcg configure import --url="gist_raw_file_url"
 | `kcg switch <branch_name>` | リポジトリを `git switch` します。                                  |
 
 上記のコマンド全てで `--filter="needle"` や `--group="group_name"` オプションによって対象リポジトリを絞ることが可能です。
+
+### exec コマンドの使い方
+
+| command                                              | description                      |
+|:-----------------------------------------------------|:---------------------------------|
+| `kcg exec list`                                      | Show registered exec commands.   |
+| `kcg exec set <name> -n "command_name" -c "command"` | Register exec commands.          |
+| `kcg exec <command>`                                 | Execute registered commands.     |
+
+上記の `set` 以外のコマンドで `--filter="needle"` や `--group="group_name"` オプションによって対象リポジトリを絞ることが可能です。
+
+#### exec コマンドの設定例
+
+```shell
+% kcg exec set kumak1/kcg --name="test" --command="go test -race -covermode atomic --coverprofile=coverage.out ./..."
+
+% kcg exec list
+test:
+  kumak1/kcg
+
+% kcg exec test
+✔ kumak1/kcg
+run go test -race -covermode atomic --coverprofile=coverage.out ./...
+?   	github.com/kumak1/kcg	[no test files]
+?   	github.com/kumak1/kcg/cmd	[no test files]
+ok  	github.com/kumak1/kcg/exec	1.410s	coverage: 100.0% of statements
+ok  	github.com/kumak1/kcg/exec/ghq	0.961s	coverage: 100.0% of statements
+ok  	github.com/kumak1/kcg/exec/git	0.573s	coverage: 100.0% of statements
+ok  	github.com/kumak1/kcg/kcg	1.081s	coverage: 100.0% of statements
+```
 
 #### Command Details
 
