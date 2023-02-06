@@ -117,6 +117,35 @@ var execUpdateCmd = &cobra.Command{
 	},
 }
 
+var execListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "Show commands list on each repository",
+	Long:  `Show commands list on each repository`,
+	Run: func(cmd *cobra.Command, args []string) {
+		groupFlag, _ := cmd.Flags().GetString("group")
+		filterFlag, _ := cmd.Flags().GetString("filter")
+		quietFlag, _ := cmd.Flags().GetBool("quiet")
+
+		execList := map[string][]string{}
+		for key, repoConf := range kcg.List(groupFlag, filterFlag) {
+			for execKey := range repoConf.Exec {
+				execList[execKey] = append(execList[execKey], key)
+			}
+		}
+
+		for listKey, listValue := range execList {
+			if quietFlag {
+				cmd.Println(listKey)
+			} else {
+				cmd.Println(listKey + ":")
+				for _, repoKey := range listValue {
+					cmd.Println("  " + repoKey)
+				}
+			}
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(execCmd)
 
@@ -125,4 +154,8 @@ func init() {
 
 	execCmd.AddCommand(execUpdateCmd)
 	assignSearchFlags(execUpdateCmd)
+
+	execCmd.AddCommand(execListCmd)
+	assignSearchFlags(execListCmd)
+	execListCmd.Flags().BoolP("quiet", "q", false, "Only display command")
 }
