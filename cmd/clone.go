@@ -17,10 +17,8 @@ package cmd
 
 import (
 	"github.com/kumak1/kcg/kcg"
-	"github.com/spf13/viper"
-	"sync"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // cloneCmd represents the clone command
@@ -32,28 +30,17 @@ var cloneCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		var wg sync.WaitGroup
-
-		for index, repo := range kcg.List(groupFlag, filterFlag) {
-			wg.Add(1)
-			index := index
-			repo := repo
-			go func() {
-				output, err := kcg.Clone(repo)
-				if err == nil {
-					cmd.Printf(kcg.ValidMessage("✔", index))
-					if output != "" {
-						cmd.Println(output)
-					}
-				} else {
-					cmd.Print(kcg.ErrorMessage("X", index))
-					cmd.Print(output + err.Error())
+		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
+			if output, err := kcg.Clone(repoConf); err == nil {
+				cmd.Printf(kcg.ValidMessage("✔", key))
+				if output != "" {
+					cmd.Println(output)
 				}
-				wg.Done()
-			}()
-		}
-
-		wg.Wait()
+			} else {
+				cmd.Print(kcg.ErrorMessage("X", key))
+				cmd.Print(output + err.Error())
+			}
+		}, groupFlag, filterFlag)
 
 		if config.Ghq {
 			for index, repo := range kcg.List("", "") {

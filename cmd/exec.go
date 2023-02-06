@@ -19,7 +19,6 @@ import (
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
 	"os"
-	"sync"
 )
 
 var execCmd = &cobra.Command{
@@ -37,50 +36,40 @@ var execSetupCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		var wg sync.WaitGroup
+		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
+			resultOutput := ""
+			resultError := false
 
-		for index, repo := range kcg.List(groupFlag, filterFlag) {
-			wg.Add(1)
-			index := index
-			repo := repo
-			go func() {
-				resultOutput := ""
-				resultError := false
-
-				for _, command := range repo.Setup {
-					expandEnvCommand := os.ExpandEnv(command)
-					output, err := kcg.Run(repo, expandEnvCommand)
-					resultOutput += "  "
-					if err == nil {
-						resultOutput += kcg.ValidMessage("run", command)
-						if output != "" {
-							resultOutput += output + "\n"
-						}
-					} else {
-						resultOutput += kcg.ErrorMessage("run", command).Error()
-						if output != "" {
-							resultOutput += output + "\n"
-						}
-						resultOutput += err.Error() + "\n"
-						resultError = true
-						break
+			for _, command := range repoConf.Setup {
+				expandEnvCommand := os.ExpandEnv(command)
+				output, err := kcg.Run(repoConf, expandEnvCommand)
+				resultOutput += "  "
+				if err == nil {
+					resultOutput += kcg.ValidMessage("run", command)
+					if output != "" {
+						resultOutput += output + "\n"
 					}
-				}
-
-				if resultError {
-					cmd.Print(kcg.ErrorMessage("X", index))
 				} else {
-					cmd.Printf(kcg.ValidMessage("✔", index))
+					resultOutput += kcg.ErrorMessage("run", command).Error()
+					if output != "" {
+						resultOutput += output + "\n"
+					}
+					resultOutput += err.Error() + "\n"
+					resultError = true
+					break
 				}
+			}
 
-				if resultOutput != "" {
-					cmd.Print(resultOutput)
-				}
-				wg.Done()
-			}()
-		}
+			if resultError {
+				cmd.Print(kcg.ErrorMessage("X", key))
+			} else {
+				cmd.Printf(kcg.ValidMessage("✔", key))
+			}
 
-		wg.Wait()
+			if resultOutput != "" {
+				cmd.Print(resultOutput)
+			}
+		}, groupFlag, filterFlag)
 	},
 }
 
@@ -92,50 +81,39 @@ var execUpdateCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		var wg sync.WaitGroup
-
-		for index, repo := range kcg.List(groupFlag, filterFlag) {
-			wg.Add(1)
-			index := index
-			repo := repo
-
-			go func() {
-				resultOutput := ""
-				resultError := false
-				for _, command := range repo.Update {
-					expandEnvCommand := os.ExpandEnv(command)
-					output, err := kcg.Run(repo, expandEnvCommand)
-					resultOutput += "  "
-					if err == nil {
-						resultOutput += kcg.ValidMessage("run", command)
-						if output != "" {
-							resultOutput += output + "\n"
-						}
-					} else {
-						resultOutput += kcg.ErrorMessage("run", command).Error()
-						if output != "" {
-							resultOutput += output + "\n"
-						}
-						resultOutput += err.Error() + "\n"
-						resultError = true
-						break
+		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
+			resultOutput := ""
+			resultError := false
+			for _, command := range repoConf.Update {
+				expandEnvCommand := os.ExpandEnv(command)
+				output, err := kcg.Run(repoConf, expandEnvCommand)
+				resultOutput += "  "
+				if err == nil {
+					resultOutput += kcg.ValidMessage("run", command)
+					if output != "" {
+						resultOutput += output + "\n"
 					}
-				}
-
-				if resultError {
-					cmd.Print(kcg.ErrorMessage("X", index))
 				} else {
-					cmd.Printf(kcg.ValidMessage("✔", index))
+					resultOutput += kcg.ErrorMessage("run", command).Error()
+					if output != "" {
+						resultOutput += output + "\n"
+					}
+					resultOutput += err.Error() + "\n"
+					resultError = true
+					break
 				}
+			}
 
-				if resultOutput != "" {
-					cmd.Print(resultOutput)
-				}
-				wg.Done()
-			}()
-		}
+			if resultError {
+				cmd.Print(kcg.ErrorMessage("X", key))
+			} else {
+				cmd.Printf(kcg.ValidMessage("✔", key))
+			}
 
-		wg.Wait()
+			if resultOutput != "" {
+				cmd.Print(resultOutput)
+			}
+		}, groupFlag, filterFlag)
 	},
 }
 
