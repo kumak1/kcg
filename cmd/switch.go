@@ -20,7 +20,6 @@ import (
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
 	"strings"
-	"sync"
 )
 
 // switchCmd represents the switch command
@@ -39,33 +38,22 @@ var switchCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		var wg sync.WaitGroup
-
-		for index, repo := range kcg.List(groupFlag, filterFlag) {
-			wg.Add(1)
-			index := index
-			repo := repo
-			go func() {
-				output, err := kcg.Switch(repo, args[0])
-				if err == nil {
-					cmd.Printf(kcg.ValidMessage("✔", index))
-					if !strings.Contains(output, "Already on") {
-						cmd.Println(output)
-					}
-				} else {
-					cmd.Print(kcg.ErrorMessage("X", index))
-					if output != "" {
-						cmd.Println(output)
-						cmd.Println(err.Error())
-					} else {
-						cmd.Print(err.Error())
-					}
+		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
+			if output, err := kcg.Switch(repoConf, args[0]); err == nil {
+				cmd.Printf(kcg.ValidMessage("✔", key))
+				if !strings.Contains(output, "Already on") {
+					cmd.Println(output)
 				}
-				wg.Done()
-			}()
-		}
-
-		wg.Wait()
+			} else {
+				cmd.Print(kcg.ErrorMessage("X", key))
+				if output != "" {
+					cmd.Println(output)
+					cmd.Println(err.Error())
+				} else {
+					cmd.Print(err.Error())
+				}
+			}
+		}, groupFlag, filterFlag)
 	},
 }
 

@@ -18,7 +18,6 @@ package cmd
 import (
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
-	"sync"
 )
 
 // cleanupCmd represents the cleanup command
@@ -30,28 +29,17 @@ var cleanupCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		var wg sync.WaitGroup
-
-		for index, repo := range kcg.List(groupFlag, filterFlag) {
-			wg.Add(1)
-			index := index
-			repo := repo
-			go func() {
-				output, err := kcg.Cleanup(repo)
-				if err == nil {
-					cmd.Print(kcg.ValidMessage("✔", index))
-					if output != "" {
-						cmd.Println(output)
-					}
-				} else {
-					cmd.Print(kcg.ErrorMessage("X", index))
-					cmd.Print(output + err.Error())
+		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
+			if output, err := kcg.Cleanup(repoConf); err == nil {
+				cmd.Print(kcg.ValidMessage("✔", key))
+				if output != "" {
+					cmd.Println(output)
 				}
-				wg.Done()
-			}()
-		}
-
-		wg.Wait()
+			} else {
+				cmd.Print(kcg.ErrorMessage("X", key))
+				cmd.Print(output + err.Error())
+			}
+		}, groupFlag, filterFlag)
 	},
 }
 

@@ -6,13 +6,6 @@ import (
 )
 
 func TestList(t *testing.T) {
-	//f := func(repo string, path string) *RepositoryConfig {
-	//	var a = &RepositoryConfig{}
-	//	a.Path = path
-	//	a.Repo = repo
-	//	a.Alias = []string{"a:b"}
-	//	return a
-	//}
 	emptyConfig := map[string]*RepositoryConfig{}
 	aConfig := map[string]*RepositoryConfig{"a": {Group: []string{"group"}}}
 	type args struct {
@@ -32,6 +25,30 @@ func TestList(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repositoryConfig = tt.args.config
 			assert.Equalf(t, tt.want, List(tt.args.group, tt.args.filter), "List(%v, %v)", tt.args.group, tt.args.filter)
+		})
+	}
+}
+
+func TestListParallelFor(t *testing.T) {
+	type args struct {
+		fn     func(key string, repoConf *RepositoryConfig)
+		group  string
+		filter string
+		config map[string]*RepositoryConfig
+	}
+	aConfig := map[string]*RepositoryConfig{"a": {Group: []string{"group"}}}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{"valid", args{
+			func(key string, repoConf *RepositoryConfig) {
+
+			}, "", "", aConfig}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ListParallelFor(tt.args.fn, tt.args.group, tt.args.filter)
 		})
 	}
 }

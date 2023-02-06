@@ -18,7 +18,6 @@ package cmd
 import (
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/cobra"
-	"sync"
 )
 
 // pullCmd represents the pull command
@@ -30,33 +29,22 @@ var pullCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		var wg sync.WaitGroup
-
-		for index, repo := range kcg.List(groupFlag, filterFlag) {
-			wg.Add(1)
-			repo := repo
-			index := index
-			go func() {
-				output, err := kcg.Pull(repo)
-
-				if err == nil {
-					cmd.Printf(kcg.ValidMessage("✔", index))
-					if output != "Already up to date." {
-						cmd.Println(output)
-					}
-				} else {
-					cmd.Print(kcg.ErrorMessage("X", index))
-					if output != "" {
-						cmd.Println(output)
-						cmd.Println(err.Error())
-					} else {
-						cmd.Print(err.Error())
-					}
+		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
+			if output, err := kcg.Pull(repoConf); err == nil {
+				cmd.Printf(kcg.ValidMessage("✔", key))
+				if output != "Already up to date." {
+					cmd.Println(output)
 				}
-				wg.Done()
-			}()
-		}
-		wg.Wait()
+			} else {
+				cmd.Print(kcg.ErrorMessage("X", key))
+				if output != "" {
+					cmd.Println(output)
+					cmd.Println(err.Error())
+				} else {
+					cmd.Print(err.Error())
+				}
+			}
+		}, groupFlag, filterFlag)
 	},
 }
 
