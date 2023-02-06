@@ -146,6 +146,39 @@ var execListCmd = &cobra.Command{
 	},
 }
 
+var execSetCmd = &cobra.Command{
+	Use:   "set <name>",
+	Short: "Set command on specify repository",
+	Long:  `Set command on specify repository`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		repoName := args[0]
+		if _, ok := config.Repos[repoName]; !ok {
+			cmd.PrintErrln(kcg.ErrorMessage("invalid name", repoName))
+			cmd.PrintErrln(cmd.Help())
+			os.Exit(1)
+		}
+
+		commandName, _ := cmd.Flags().GetString("name")
+		commandStrings, _ := cmd.Flags().GetStringArray("command")
+
+		if err := cmd.MarkFlagRequired("name"); commandName == "" || err != nil {
+			cmd.PrintErr(kcg.ErrorMessage("invalid", "flag needs an argument: --name"))
+			return
+		}
+		if err := cmd.MarkFlagRequired("command"); len(commandStrings) == 0 || commandStrings[0] == "" || err != nil {
+			cmd.PrintErr(kcg.ErrorMessage("invalid", "flag needs an argument: --command"))
+			return
+		}
+
+		config.Repos[repoName].Exec[commandName] = commandStrings
+
+		if err := UpdateConfig(); err != nil {
+			cmd.PrintErrln("The config file could not write")
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(execCmd)
 
@@ -158,4 +191,8 @@ func init() {
 	execCmd.AddCommand(execListCmd)
 	assignSearchFlags(execListCmd)
 	execListCmd.Flags().BoolP("quiet", "q", false, "Only display command")
+
+	execCmd.AddCommand(execSetCmd)
+	execSetCmd.Flags().StringP("name", "n", "", "Execute command name (required)")
+	execSetCmd.Flags().StringArrayP("command", "c", []string{}, "Execute command string (required)")
 }
