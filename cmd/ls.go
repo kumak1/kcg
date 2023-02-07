@@ -39,30 +39,34 @@ var lsCmd = &cobra.Command{
 
 		if !quietFlag {
 			if allFlag {
-				fmt.Fprintln(w, "NAME\tCURRENT BRANCH\tGROUP\tBRANCH ALIAS\tREMOTE REPO\tLOCAL PATH")
+				_, _ = fmt.Fprintln(w, "NAME\tCURRENT BRANCH\tGROUP\tBRANCH ALIAS\tREMOTE REPO\tLOCAL PATH")
 			} else {
-				fmt.Fprintln(w, "NAME\tCURRENT BRANCH\tGROUP")
+				_, _ = fmt.Fprintln(w, "NAME\tCURRENT BRANCH\tGROUP")
 			}
 		}
 
 		for index, repo := range kcg.List(groupFlag, filterFlag) {
 			if quietFlag {
-				fmt.Fprintln(w, index)
+				_, _ = fmt.Fprintln(w, index)
 			} else {
 				path, _ := kcg.Path(repo)
 				branch := kcg.CurrentBranch(repo)
 				group := strings.Join(repo.Group, ",")
 
 				if allFlag {
-					branchAlias := strings.Join(repo.Alias, ",")
-					fmt.Fprintln(w, index+"\t"+branch+"\t"+group+"\t"+branchAlias+"\t"+repo.Repo+"\t"+path)
+					var branches []string
+					for key, val := range repo.BranchAlias {
+						branches = append(branches, key+":"+val)
+					}
+					branchAlias := strings.Join(branches, ",")
+					_, _ = fmt.Fprintln(w, index+"\t"+branch+"\t"+group+"\t"+branchAlias+"\t"+repo.Repo+"\t"+path)
 				} else {
-					fmt.Fprintln(w, index+"\t"+branch+"\t"+group)
+					_, _ = fmt.Fprintln(w, index+"\t"+branch+"\t"+group)
 				}
 			}
 		}
 
-		w.Flush()
+		_ = w.Flush()
 	},
 }
 

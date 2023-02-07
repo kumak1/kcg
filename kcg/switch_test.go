@@ -11,7 +11,7 @@ func TestSwitch(t *testing.T) {
 		var a = &RepositoryConfig{}
 		a.Path = path
 		a.Repo = repo
-		a.Alias = []string{"a:b"}
+		a.BranchAlias = map[string]string{"a": "b"}
 		return a
 	}
 	type args struct {
@@ -61,7 +61,7 @@ func TestSwitch(t *testing.T) {
 
 func Test_convertedBranch(t *testing.T) {
 	type args struct {
-		branchArias []string
+		branchArias map[string]string
 		branch      string
 	}
 	tests := []struct {
@@ -69,9 +69,9 @@ func Test_convertedBranch(t *testing.T) {
 		args args
 		want string
 	}{
-		{"arias empty", args{[]string{}, "branch"}, "branch"},
-		{"arias not hit", args{[]string{"a:b"}, "branch"}, "branch"},
-		{"arias hit", args{[]string{"a:b"}, "a"}, "b"},
+		{"arias empty", args{map[string]string{}, "branch"}, "branch"},
+		{"arias not hit", args{map[string]string{"a": "b"}, "branch"}, "branch"},
+		{"arias hit", args{map[string]string{"a": "b"}, "a"}, "b"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
