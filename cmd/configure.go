@@ -65,6 +65,7 @@ var configureSetCmd = &cobra.Command{
 		if _, ok := config.Repos[args[0]]; !ok {
 			config.Repos[args[0]] = &kcg.RepositoryConfig{}
 			config.Repos[args[0]].Exec = map[string][]string{}
+			config.Repos[args[0]].BranchAlias = map[string]string{}
 		}
 		if repo, _ := cmd.Flags().GetString("repo"); repo != "" {
 			config.Repos[args[0]].Repo = repo
@@ -79,7 +80,7 @@ var configureSetCmd = &cobra.Command{
 			config.Repos[args[0]].Path = path
 		}
 		if branchAlias, _ := cmd.Flags().GetStringArray("branch-alias"); len(branchAlias) != 0 {
-			config.Repos[args[0]].Alias = branchAlias
+			config.Repos[args[0]].SetAlias(branchAlias)
 		}
 		if group, _ := cmd.Flags().GetStringArray("group"); len(group) != 0 {
 			config.Repos[args[0]].Group = group
@@ -187,7 +188,7 @@ var configureAddAliasCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		if _, ok := config.Repos[args[0]]; ok {
-			config.Repos[args[0]].Alias = append(config.Repos[args[0]].Alias, args[1])
+			config.Repos[args[0]].AddAlias(args[1])
 			if err := UpdateConfig(); err != nil {
 				cmd.PrintErrln("The config file could not write")
 			}
