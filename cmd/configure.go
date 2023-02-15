@@ -18,7 +18,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	kcgExec "github.com/kumak1/kcg/exec"
+	kcgExec "github.com/kumak1/kcg/internal"
 	"github.com/kumak1/kcg/kcg"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"

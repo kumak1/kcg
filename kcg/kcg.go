@@ -2,15 +2,15 @@ package kcg
 
 import (
 	"fmt"
-	"github.com/kumak1/kcg/exec"
-	"github.com/kumak1/kcg/exec/ghq"
-	"github.com/kumak1/kcg/exec/git"
+	"github.com/kumak1/kcg/internal"
+	"github.com/kumak1/kcg/internal/ghq"
+	"github.com/kumak1/kcg/internal/git"
 	"path/filepath"
 	"strings"
 )
 
 var (
-	kcgExec exec.Interface
+	kcgExec internal.Interface
 	kcgGit  git.Interface
 	kcgGhq  ghq.Interface
 )
@@ -19,7 +19,7 @@ func Initialize(config Config) {
 	setConfig(config)
 
 	if kcgExec == nil {
-		kcgExec = exec.New()
+		kcgExec = internal.New()
 	}
 	if kcgGit == nil {
 		kcgGit = git.New(kcgExec)

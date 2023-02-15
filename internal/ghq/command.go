@@ -1,11 +1,11 @@
 package ghq
 
 import (
-	"github.com/kumak1/kcg/exec"
+	"github.com/kumak1/kcg/internal"
 	"strings"
 )
 
-var kcgExec exec.Interface
+var kcgExec internal.Interface
 
 type (
 	Interface interface {
@@ -34,7 +34,7 @@ func (d defaultExec) List() []string {
 	return strings.Split(list, "\n")
 }
 
-func New(e exec.Interface) Interface {
+func New(e internal.Interface) Interface {
 	kcgExec = e
 	var i Interface = defaultExec{}
 	return i
