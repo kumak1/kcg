@@ -1,4 +1,4 @@
-package kcg
+package pkg
 
 func Cleanup(config *RepositoryConfig) (string, error) {
 	if path, exists := Path(config); exists {

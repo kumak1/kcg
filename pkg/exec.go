@@ -1,4 +1,4 @@
-package kcg
+package pkg
 
 func Run(config *RepositoryConfig, command string) (string, error) {
 	if path, exists := Path(config); exists {

@@ -1,4 +1,4 @@
-package kcg
+package pkg
 
 import (
 	"regexp"

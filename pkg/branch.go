@@ -1,4 +1,4 @@
-package kcg
+package pkg
 
 func CurrentBranch(config *RepositoryConfig) string {
 	if path, exists := Path(config); exists {

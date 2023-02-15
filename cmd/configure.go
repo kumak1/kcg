@@ -19,7 +19,7 @@ import (
 	"bytes"
 	"fmt"
 	kcgExec "github.com/kumak1/kcg/internal"
-	"github.com/kumak1/kcg/kcg"
+	"github.com/kumak1/kcg/pkg"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 	"io"
@@ -43,7 +43,7 @@ var configureInitCmd = &cobra.Command{
 	Long:  `Create an empty config file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
-		viper.Set("ghq", kcg.GhqValid())
+		viper.Set("ghq", pkg.GhqValid())
 		viper.Set("repos", config.Repos)
 		path, _ := cmd.Flags().GetString("path")
 
@@ -63,7 +63,7 @@ var configureSetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		initRepo()
 		if _, ok := config.Repos[args[0]]; !ok {
-			config.Repos[args[0]] = &kcg.RepositoryConfig{}
+			config.Repos[args[0]] = &pkg.RepositoryConfig{}
 			config.Repos[args[0]].Exec = map[string][]string{}
 			config.Repos[args[0]].BranchAlias = map[string]string{}
 		}
@@ -71,7 +71,7 @@ var configureSetCmd = &cobra.Command{
 			config.Repos[args[0]].Repo = repo
 
 			if config.Ghq {
-				if path, ok := kcg.Path(config.Repos[args[0]]); ok {
+				if path, ok := pkg.Path(config.Repos[args[0]]); ok {
 					config.Repos[args[0]].Path = path
 				}
 			}
@@ -129,25 +129,25 @@ var configureImportCmd = &cobra.Command{
 		}
 
 		if useGhq {
-			if kcg.GhqValid() {
+			if pkg.GhqValid() {
 				tempConfig.Ghq = true
-				kcg.Initialize(tempConfig)
-				for index, repo := range kcg.GhqList() {
+				pkg.Initialize(tempConfig)
+				for index, repo := range pkg.GhqList() {
 					if _, ok := tempConfig.Repos[index]; !ok {
-						tempConfig.Repos[index] = &kcg.RepositoryConfig{}
+						tempConfig.Repos[index] = &pkg.RepositoryConfig{}
 					}
 					tempConfig.Repos[index].Repo = repo
 
-					if path, ok := kcg.Path(tempConfig.Repos[index]); ok {
+					if path, ok := pkg.Path(tempConfig.Repos[index]); ok {
 						tempConfig.Repos[index].Path = path
 					}
 				}
 			} else {
-				cmd.PrintErr(kcg.ErrorMessage("invalid", "ghq command is not available"))
+				cmd.PrintErr(pkg.ErrorMessage("invalid", "ghq command is not available"))
 			}
 		}
 
-		viper.Set("ghq", kcg.GhqValid())
+		viper.Set("ghq", pkg.GhqValid())
 		viper.Set("repos", tempConfig.Repos)
 
 		if err := WriteConfig(cfgFile); err != nil {
@@ -165,12 +165,12 @@ var configureExportCmd = &cobra.Command{
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
 		viper.Reset()
-		viper.Set("repos", kcg.List(groupFlag, filterFlag))
+		viper.Set("repos", pkg.List(groupFlag, filterFlag))
 
 		if bs, err := yaml.Marshal(viper.AllSettings()); err == nil {
 			fmt.Print(string(bs))
 		} else {
-			cmd.PrintErr(kcg.ErrorMessage("invalid", err.Error()))
+			cmd.PrintErr(pkg.ErrorMessage("invalid", err.Error()))
 		}
 	},
 }
@@ -193,7 +193,7 @@ var configureAddAliasCmd = &cobra.Command{
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
-			cmd.PrintErr(kcg.ErrorMessage("not exists", args[0]))
+			cmd.PrintErr(pkg.ErrorMessage("not exists", args[0]))
 		}
 	},
 }
@@ -210,7 +210,7 @@ var configureAddGroupCmd = &cobra.Command{
 				cmd.PrintErrln("The config file could not write")
 			}
 		} else {
-			cmd.PrintErr(kcg.ErrorMessage("not exists", args[0]))
+			cmd.PrintErr(pkg.ErrorMessage("not exists", args[0]))
 		}
 	},
 }
@@ -231,7 +231,7 @@ var configureDeleteCmd = &cobra.Command{
 
 func initRepo() {
 	if config.Repos == nil {
-		config.Repos = map[string]*kcg.RepositoryConfig{}
+		config.Repos = map[string]*pkg.RepositoryConfig{}
 	}
 }
 
@@ -259,27 +259,27 @@ func WriteConfig(path string) error {
 	return viper.WriteConfig()
 }
 
-func importConfigFile(path string) (kcg.Config, error) {
-	var importConfig kcg.Config
+func importConfigFile(path string) (pkg.Config, error) {
+	var importConfig pkg.Config
 
 	if !kcgExec.New().FileExists(path) {
-		return importConfig, kcg.ErrorMessage("not exists", path)
+		return importConfig, pkg.ErrorMessage("not exists", path)
 	}
 
 	viper.SetConfigFile(path)
 	if err := viper.ReadInConfig(); err != nil {
-		return importConfig, kcg.ErrorMessage("invalid", "cant read config file")
+		return importConfig, pkg.ErrorMessage("invalid", "cant read config file")
 	}
 
 	if err := viper.Unmarshal(&importConfig); err != nil {
-		return importConfig, kcg.ErrorMessage("invalid", "cant unmarshal config")
+		return importConfig, pkg.ErrorMessage("invalid", "cant unmarshal config")
 	}
 
 	return importConfig, nil
 }
 
-func importConfigUrl(url string) (kcg.Config, error) {
-	var importConfig kcg.Config
+func importConfigUrl(url string) (pkg.Config, error) {
+	var importConfig pkg.Config
 
 	if res, err := http.Get(url); err == nil {
 		if bodyBytes, err := io.ReadAll(res.Body); err == nil {
@@ -294,7 +294,7 @@ func importConfigUrl(url string) (kcg.Config, error) {
 	}
 
 	if err := viper.Unmarshal(&importConfig); err != nil {
-		return importConfig, kcg.ErrorMessage("invalid", "cant unmarshal config")
+		return importConfig, pkg.ErrorMessage("invalid", "cant unmarshal config")
 
 	}
 
