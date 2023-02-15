@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/kumak1/kcg/kcg"
+	"github.com/kumak1/kcg/pkg"
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
@@ -45,12 +45,12 @@ var lsCmd = &cobra.Command{
 			}
 		}
 
-		for index, repo := range kcg.List(groupFlag, filterFlag) {
+		for index, repo := range pkg.List(groupFlag, filterFlag) {
 			if quietFlag {
 				_, _ = fmt.Fprintln(w, index)
 			} else {
-				path, _ := kcg.Path(repo)
-				branch := kcg.CurrentBranch(repo)
+				path, _ := pkg.Path(repo)
+				branch := pkg.CurrentBranch(repo)
 				group := strings.Join(repo.Group, ",")
 
 				if allFlag {

@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/kumak1/kcg/kcg"
+	"github.com/kumak1/kcg/pkg"
 	"github.com/spf13/cobra"
 )
 
@@ -29,14 +29,14 @@ var cleanupCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
-			if output, err := kcg.Cleanup(repoConf); err == nil {
-				cmd.Print(kcg.ValidMessage("✔", key))
+		pkg.ListParallelFor(func(key string, repoConf *pkg.RepositoryConfig) {
+			if output, err := pkg.Cleanup(repoConf); err == nil {
+				cmd.Print(pkg.ValidMessage("✔", key))
 				if output != "" {
 					cmd.Println(output)
 				}
 			} else {
-				cmd.Print(kcg.ErrorMessage("X", key))
+				cmd.Print(pkg.ErrorMessage("X", key))
 				cmd.Print(output + err.Error())
 			}
 		}, groupFlag, filterFlag)

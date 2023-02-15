@@ -1,6 +1,6 @@
 package git
 
-import "github.com/kumak1/kcg/exec"
+import "github.com/kumak1/kcg/internal"
 
 type (
 	Interface interface {
@@ -15,7 +15,7 @@ type (
 	defaultExec struct{}
 )
 
-var kcgExec exec.Interface
+var kcgExec internal.Interface
 
 func (d defaultExec) BranchExists(path string, branch string) bool {
 	return kcgExec.NotError(path, "git", "show-ref", "-q", "--heads", branch)
@@ -49,7 +49,7 @@ func (d defaultExec) OriginUrl(path string) (string, error) {
 	return kcgExec.Output(path, "git", "config", "--get", "remote.origin.url")
 }
 
-func New(e exec.Interface) Interface {
+func New(e internal.Interface) Interface {
 	kcgExec = e
 	var i Interface = defaultExec{}
 	return i

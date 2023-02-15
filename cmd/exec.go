@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/kumak1/kcg/kcg"
+	"github.com/kumak1/kcg/pkg"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -39,21 +39,21 @@ var execCmd = &cobra.Command{
 		resultError := false
 		validCommand := false
 
-		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
+		pkg.ListParallelFor(func(key string, repoConf *pkg.RepositoryConfig) {
 			for execKey, execStrings := range repoConf.Exec {
 				if execKey == execCommandName {
 					validCommand = true
 					for _, cmdString := range execStrings {
 						expandEnvCommand := os.ExpandEnv(cmdString)
-						output, err := kcg.Run(repoConf, expandEnvCommand)
+						output, err := pkg.Run(repoConf, expandEnvCommand)
 
 						if err == nil {
-							resultOutput += kcg.ValidMessage("run", cmdString)
+							resultOutput += pkg.ValidMessage("run", cmdString)
 							if output != "" {
 								resultOutput += output + "\n"
 							}
 						} else {
-							resultOutput += kcg.ErrorMessage("run", cmdString).Error()
+							resultOutput += pkg.ErrorMessage("run", cmdString).Error()
 							if output != "" {
 								resultOutput += output + "\n"
 							}
@@ -64,9 +64,9 @@ var execCmd = &cobra.Command{
 					}
 
 					if resultError {
-						cmd.Print(kcg.ErrorMessage("X", key))
+						cmd.Print(pkg.ErrorMessage("X", key))
 					} else {
-						cmd.Printf(kcg.ValidMessage("✔", key))
+						cmd.Printf(pkg.ValidMessage("✔", key))
 					}
 
 					if resultOutput != "" {
@@ -84,7 +84,7 @@ var execCmd = &cobra.Command{
 
 func execList(group string, filter string) map[string][]string {
 	execList := map[string][]string{}
-	for key, repoConf := range kcg.List(group, filter) {
+	for key, repoConf := range pkg.List(group, filter) {
 		for execKey := range repoConf.Exec {
 			execList[execKey] = append(execList[execKey], key)
 		}
@@ -123,7 +123,7 @@ var execSetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		repoName := args[0]
 		if _, ok := config.Repos[repoName]; !ok {
-			cmd.PrintErrln(kcg.ErrorMessage("invalid name", repoName))
+			cmd.PrintErrln(pkg.ErrorMessage("invalid name", repoName))
 			cmd.PrintErrln(cmd.Help())
 			os.Exit(1)
 		}
@@ -132,11 +132,11 @@ var execSetCmd = &cobra.Command{
 		commandStrings, _ := cmd.Flags().GetStringArray("command")
 
 		if err := cmd.MarkFlagRequired("name"); commandName == "" || err != nil {
-			cmd.PrintErr(kcg.ErrorMessage("invalid", "flag needs an argument: --name"))
+			cmd.PrintErr(pkg.ErrorMessage("invalid", "flag needs an argument: --name"))
 			return
 		}
 		if err := cmd.MarkFlagRequired("command"); len(commandStrings) == 0 || commandStrings[0] == "" || err != nil {
-			cmd.PrintErr(kcg.ErrorMessage("invalid", "flag needs an argument: --command"))
+			cmd.PrintErr(pkg.ErrorMessage("invalid", "flag needs an argument: --command"))
 			return
 		}
 

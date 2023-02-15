@@ -1,4 +1,4 @@
-package kcg
+package pkg
 
 func Path(config *RepositoryConfig) (string, bool) {
 	if useGhq {

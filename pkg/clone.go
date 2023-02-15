@@ -1,4 +1,4 @@
-package kcg
+package pkg
 
 func Clone(config *RepositoryConfig) (string, error) {
 	if config.Repo == "" {

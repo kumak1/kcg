@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/kumak1/kcg/kcg"
+	"github.com/kumak1/kcg/pkg"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -38,14 +38,14 @@ var switchCmd = &cobra.Command{
 		groupFlag, _ := cmd.Flags().GetString("group")
 		filterFlag, _ := cmd.Flags().GetString("filter")
 
-		kcg.ListParallelFor(func(key string, repoConf *kcg.RepositoryConfig) {
-			if output, err := kcg.Switch(repoConf, args[0]); err == nil {
-				cmd.Printf(kcg.ValidMessage("✔", key))
+		pkg.ListParallelFor(func(key string, repoConf *pkg.RepositoryConfig) {
+			if output, err := pkg.Switch(repoConf, args[0]); err == nil {
+				cmd.Printf(pkg.ValidMessage("✔", key))
 				if !strings.Contains(output, "Already on") {
 					cmd.Println(output)
 				}
 			} else {
-				cmd.Print(kcg.ErrorMessage("X", key))
+				cmd.Print(pkg.ErrorMessage("X", key))
 				if output != "" {
 					cmd.Println(output)
 					cmd.Println(err.Error())

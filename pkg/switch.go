@@ -1,4 +1,4 @@
-package kcg
+package pkg
 
 func Switch(config *RepositoryConfig, branch string) (string, error) {
 	if path, exists := Path(config); exists {

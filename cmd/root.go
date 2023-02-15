@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kumak1/kcg/kcg"
+	"github.com/kumak1/kcg/pkg"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -27,7 +27,7 @@ import (
 var (
 	version string
 	cfgFile string
-	config  kcg.Config
+	config  pkg.Config
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -88,7 +88,7 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	kcg.Initialize(config)
+	pkg.Initialize(config)
 }
 
 func assignSearchFlags(cmd *cobra.Command) {
