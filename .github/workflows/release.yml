@@ -16,12 +16,12 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.19.x'
+          go-version: '1.20.x'
           cache: true
           cache-dependency-path: go.sum
 
       - name: Release Package
-        uses: goreleaser/goreleaser-action@v2.9.1
+        uses: goreleaser/goreleaser-action@v4
         with:
           version: latest
           args: release --rm-dist
