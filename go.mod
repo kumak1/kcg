@@ -2,8 +2,6 @@ module github.com/kumak1/kcg
 
 go 1.22
 
-toolchain go1.22.0
-
 require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
